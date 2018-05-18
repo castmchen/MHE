@@ -1,0 +1,121 @@
+.col-sm-2 {
+    width: 7%!important;
+}
+
+.sidebar {
+    float: left;
+    position: relative;
+    border: 1px solid #ccc;
+    border-width: 0 1px 1px 0;
+    background-color: #f2f2f2;
+    text-align: center;
+    height: 1000px;
+    width: 100%;
+}
+
+.nav-item :after {
+    border: 1px solid #ccc;
+    border-width: 0 1px 0 0;
+}
+
+.nav-item:not(:last-child) {
+    -webkit-box-shadow: 10px 0px 0px -9px red;
+    -moz-box-shadow: 10px 0px 0px -9px red;
+    box-shadow: 10px 0px 0px -9px red;
+}
+
+.nav-link {
+    display: block;
+    padding: .5rem 1rem;
+    width: 100px;
+    height: 20px;
+    border: 1px solid red;
+}
+
+ul li a {
+    /* border: 1px solid #ccc;
+    border-width: 0 1px 1px 0; */
+    display: block;
+    width: 100px;
+    height: 20px;
+    border: 1px solid red!important;
+}
+
+
+/* .sidebar:before {
+    content: "";
+    display: block;
+    width: 15.4%;
+    position: fixed;
+    bottom: 0;
+    top: 0;
+    z-index: -1;
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    border-width: 0 1px 0 0;
+} */
+
+.sideContainer {
+    height: 40px;
+    width: 100%;
+}
+
+.nav-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nav-list>li.active {
+    background-color: #fff;
+}
+
+.nav-list>li:first-child {
+    border-top: 0;
+}
+
+.nav-list>li {
+    display: block;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid #fcfcfc;
+    border-bottom: 1px solid #e5e5e5;
+    position: relative;
+}
+
+.plusTrigger {
+    color: green;
+    position: fixed;
+    display: inline-block;
+    margin-left: 90px;
+    margin-top: 7px;
+    cursor: pointer;
+}
+
+.saveTrigger {
+    margin-top: 7px;
+    margin-left: 110px;
+    position: fixed;
+    color: green;
+    display: inline-block;
+    cursor: pointer!important;
+}
+
+.ulSide {
+    cursor: "pointer";
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    border-width: 0 0 1px 0;
+    background-color: #fff;
+}
+
+.ulContainer {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.liSide {
+    padding-left: 0;
+    cursor: pointer!important;
+}

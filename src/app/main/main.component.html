@@ -1,0 +1,58 @@
+<div class="row mainNavbar">
+    <div class="col-sm-2 center">
+        <a href="javascript:void(0)" class="navbar-brand">
+            <small class="fontColor">
+                    <i class="fa fa-leaf"></i>
+                    MHE
+                </small>
+        </a>
+    </div>
+
+    <div class="col-sm-8 ">
+        <div class="btn-group navbar-brand" btnRadioGroup [(ngModel)]="navigationValue">
+            <label class="btn btn-info" btnRadio="Manage" tabindex="0" role="button">Manage</label>
+            <label class="btn btn-info" btnRadio="Flow" tabindex="0" role="button">Flow</label>
+            <!-- <label class="btn btn-info" btnRadio="Other" tabindex="0" role="button">Other</label> -->
+        </div>
+    </div>
+
+    <div class="col-sm-2 " role="navigation">
+        <!-- <div class="btn-group light-blue" dropdown>
+            <a id="button-basic" href="javascript:void(0)" dropdownToggle class="user-info dropdown-toggle " data-toggle="dropdown" aria-controls="dropdown-basic">
+                <img class="nav-user-photo" src="../../img/user" alt="Jason's Photo" />
+                <span class=" fontColor">
+                                    <small>welcome,</small>
+                                    qiang.c.chen
+                                </span>
+            </a>
+            <ul *dropdownMenu class="dropdown-menu" role="menu">
+                <li role="menuitem"><a class="dropdown-item" href="#"><i class="fa fa-cog"></i> 设置</a></li>
+                <li role="menuitem"><a class="dropdown-item" href="#"><i class="fa fa-user"></i> 个人资料</a></li>
+                <li role="menuitem"><a class="dropdown-item" href="#"><i class="fa fa-off"></i> 退出</a></li>
+                <li class="divider dropdown-divider"></li>
+
+            </ul>
+        </div> -->
+
+        <div class="btn-group navbar-brand" dropdown>
+            <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
+                <span class="fontColor">
+                    qiang.c.chen
+                </span>
+            </button>
+            <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic">
+                <li role="menuitem"><a class="dropdown-item" href="#">Setting</a></li>
+                <li role="menuitem"><a class="dropdown-item" href="#">Details</a></li>
+                <li role="menuitem"><a class="dropdown-item" href="#">Exit</a></li>
+                <li class="divider dropdown-divider"></li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+
+<app-app-management *ngIf="navigationValue == 'Manage'">
+</app-app-management>
+<app-app-flow *ngIf="navigationValue == 'Flow'">
+</app-app-flow>

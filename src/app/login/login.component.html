@@ -1,0 +1,234 @@
+<div class="backstyle">
+    <div class="author">
+        <span>Author : qiang.c.chen | Email : qiang.c.chen@accenture.com</span>
+    </div>
+</div>
+<br><br><br><br><br>
+<div style="z-index: 999;" class="row">
+    <div class="col-sm-4"></div>
+    <div class="col-sm-4">
+        <div class="center">
+            <div>
+                <h1>
+                    <!-- <i class="icon-leaf green"></i> -->
+                    <span class="red">M</span>
+                    <span class="green">HE</span>
+                </h1>
+                <h4 class="blue">&copy; CIO-myTE</h4>
+            </div>
+            <br />
+            <br />
+
+            <!-- /position-relative -->
+            <div class="block">
+                <!-- /login-box -->
+                <div *ngIf="loginFlag" id="login-box" class="login-box clo-sm-4">
+                    <div>
+                        <div>
+                            <h6 class="blue">
+                                <i class="green"></i> Please Enter Your Name And Password
+                            </h6>
+                            <div></div>
+
+                            <form>
+                                <fieldset>
+                                    <label style="width:90%;">
+                                           <span class="block">
+                                             <input type="text" [(ngModel)]="UserInfo.UserName" class="form-control" name="Login_Username" placeholder="Username" />
+                                            </span>
+                                          </label>
+                                    <i class="fa fa-user"></i>
+                                    <br /><br />
+                                    <label style="width:90%">
+                                          <span class="block">
+                                             <input type="password" [(ngModel)]="UserInfo.Password" class="form-control" name="Login_Password" placeholder="Password" />
+                                            </span>
+                                          </label>
+                                    <i class="fa fa-lock"></i>
+
+
+                                    <div class="row">
+                                        <div class="col-sm-1"></div>
+                                        <div class="col-sm-4 col-6">
+                                            <label>
+                                                    <input type="checkbox" ng-checked="isRemember"/>
+                                                    <span>Remember Me</span>
+                                                </label>
+                                        </div>
+                                        <div class="col-sm-6 col-6">
+                                            <button type="button" class="pull-right btn btn-sm btn-primary submitButton " (click)="login()">
+                                            <i class="fa fa-key"></i>
+                                            Login
+                                            </button>
+                                        </div>
+                                        <div class="col-sm-1"></div>
+                                    </div>
+                                    <div></div>
+                                </fieldset>
+                            </form>
+
+                            <div class="social-or-login center">
+                                <span style="font-weight: bold">Or Login Using</span>
+                            </div>
+
+                            <div class="center">
+                                <a href="http://www.baidu.com" class="btn btn-primary">
+                                    <i class="fa fa-facebook"></i>
+                                </a>
+
+                                <a href="http://www.baidu.com" class="btn btn-info">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+
+                                <a href="http://www.baidu.com" class="btn btn-danger">
+                                    <i class="fa fa-google-plus"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- /widget-main -->
+
+                        <div>
+                            <div>
+                                <a href="javascript:void(0)" (click)="register()">
+                                    <i class="fa fa-arrow-left "></i> I forgot my password
+                                </a>
+                            </div>
+
+                            <div>
+                                <a href="javascript:void(0) " (click)="resetPassword()"> I want to register
+                                <i class="fa fa-arrow-right "></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /widget-body -->
+                </div>
+
+                <!-- /forgot-box -->
+                <div *ngIf="registerFlag" id="forgot-box">
+                    <div>
+                        <div>
+                            <h4 style="color: #dd5a43!important;font-family: cursive;" class="header lighter bigger ">
+                                <i class="fa fa-key "></i> Retrieve Password
+                            </h4>
+
+                            <div></div>
+                            <p>
+                                Enter your email and to receive instructions
+                            </p>
+
+                            <form>
+                                <fieldset>
+                                    <label class="block">
+                              <span class="block">
+                                <input type="email" [(ngModel)]="mailForResetPassword" class="form-control" name="Email" placeholder="Email " />
+                                
+                              </span>
+                            </label>
+                                    <!-- <div>
+                                        <i style="z-index: 2;" class="fa fa-envelope "></i>
+                                    </div> -->
+                                    <div>
+                                        <button type="button " class="pull-right btn btn-sm btn-danger ">
+                                <i class="fa fa-life-buoy "></i>
+                                Send Me!
+                              </button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                        <!-- /widget-main -->
+
+                        <div class="center ">
+                            <a href="javascript:void(0)" (click)="login()" class="back-to-login-link ">
+                          Back to login
+                          <i class="fa fa-arrow-right "></i>
+                        </a>
+                        </div>
+                    </div>
+                    <!-- /widget-body -->
+                </div>
+
+                <!-- /signup-box -->
+                <div *ngIf="forgetFlag " id="signup-box ">
+                    <div class="widget-body ">
+                        <div class="widget-main ">
+                            <h4 class="header green lighter bigger ">
+                                <i class="icon-group blue "></i> New User Registration
+                            </h4>
+
+                            <div></div>
+                            <p> Enter your details to begin: </p>
+
+                            <form>
+                                <fieldset>
+                                    <i class="fa fa-envelope put-icon"></i>
+                                    <label class="block ">
+                              <span class="block">
+                                <input type="email" [(ngModel)]="UserInfo.Email" class="form-control " name="Register_Email " placeholder="EmailAddress" />
+                              </span>
+                            </label>
+
+                                    <i class="fa fa-user put-icon"></i>
+                                    <label class="block ">
+                              <span class="block">
+                                <input type="text " [(ngModel)]="UserInfo.UserName" class="form-control " name="Register_Username" placeholder="Username " />
+                              </span>
+                            </label>
+
+                                    <i class="fa fa-lock put-icon"></i>
+                                    <label class="block">
+                              <span class="block">
+                                <input type="password" [(ngModel)]="UserInfo.Password" class="form-control " name="Register_Password" placeholder="Password " />
+                              </span>
+                            </label>
+
+                                    <i class="fa fa-retweet put-icon"></i>
+                                    <label class="block">
+                              <span class="block">
+                                <input type="password" [(ngModel)]="UserInfo.ConfirmPassword" class="form-control " name="Register_ComfirmPassword" placeholder="ComfirmPassword " />
+                              </span>
+                            </label>
+
+                                    <label style="text-align: left" class="block ">
+                                            <input type="checkbox" name="accepted" [(ngModel)]="IsAccepted"/>
+                              <span>
+                                I accept the
+                                <a href="javascript:void(0)">User Agreement</a>
+                              </span>
+                            </label>
+
+                                    <div></div>
+
+                                    <div>
+                                        <button type="reset " class="pull-left btn btn-sm ">
+                                <i class="fa fa-refresh "></i>
+                                Reset
+                              </button>
+
+                                        <button type="button " class="pull-right btn btn-sm btn-success ">
+                                Register
+                                <i class="fa fa-arrow-right fa fa-on-right "></i>
+                              </button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+
+                        <div class="center ">
+                            <a href="javascript:void(0) " (click)="login()" class="back-to-login-link ">
+                                <i class="fa fa-arrow-left "></i> Back to login
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /widget-body -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- /.col -->
+    <div class="col-sm-4 "></div>
+</div>
+<!-- /.row -->

@@ -1,0 +1,65 @@
+.backstyle {
+    background-image: url('../../img/background.jpg');
+    background-position: center;
+    background-size: 100% 100%;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.author {
+    position: absolute;
+    margin-left: 67%;
+    margin-top: 40%;
+    font-weight: 500;
+}
+
+.center {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.red {
+    color: #dd5a43!important;
+    font-size: 60px;
+    font-family: cursive
+}
+
+.green {
+    color: #69aa46!important;
+    font-family: cursive
+}
+
+.blue {
+    color: #478fca!important;
+}
+
+.icon-leaf:before {
+    content: "\f06c";
+}
+
+.login-box {
+    position: relative;
+}
+
+.block {
+    display: block!important;
+    text-align: center;
+}
+
+.remmberMe {
+    text-align: left;
+}
+
+.submitButton {
+    margin-right: 23px;
+    width: 40%;
+    text-align: center;
+}
+
+.put-icon {
+    position: absolute;
+    margin-top: 10px;
+    margin-left: 40%;
+}
