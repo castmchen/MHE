@@ -153,3 +153,10 @@ ul li a {
     height: 40px;
     margin-top: 10px;
 }
+
+.flowPanel {
+    position: absolute;
+    height: 80%;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+}

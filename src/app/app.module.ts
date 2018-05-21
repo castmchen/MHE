@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { MainComponent } from './main/main.component';
 import { setTheme } from 'ngx-bootstrap/utils';
+import { AlertModule } from 'ngx-bootstrap/alert';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { TankService } from './service/tank-service.service';
 
@@ -41,6 +42,7 @@ const appRoutes: Routes = [
     ButtonsModule.forRoot(),
     TabsModule.forRoot(),
     ModalModule.forRoot(),
+    AlertModule.forRoot(),
     BrowserModule,
     FormsModule,
     HttpClientModule,

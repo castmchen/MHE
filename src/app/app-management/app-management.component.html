@@ -2,9 +2,9 @@
     <div class="col-sm-2">
         <div class="sidebar">
             <button type="button" class="btn btn-success btn-sm sideContainer" (click)="addNewContainer(newContainerTemplate)">
-                            Add new Container
+                            Add New Container
                           </button>
-            <div *ngFor="let containerNode of SideTree.TreeRoot" [ngClass]="{'list-group ulSide': containerNode.ExpansionFlag, 'list-group ulSideClose': !containerNode.ExpansionFlag}">
+            <div *ngFor="let containerNode of sideTree.TreeRoot" [ngClass]="{'list-group ulSide': containerNode.ExpansionFlag, 'list-group ulSideClose': !containerNode.ExpansionFlag}">
                 <div (click)="showHideContainer(containerNode)" class="ulContainer" style="height:40px">
                     <i *ngIf="containerNode.ExpansionFlag" class="fa fa-minus"></i>
                     <i *ngIf="!containerNode.ExpansionFlag" class="fa fa-plus"></i> {{containerNode.ContainerName}}
@@ -42,9 +42,7 @@
             </div>
         </div>
         </span>
-
     </div>
-
 </div>
 </div>
 </div>
@@ -52,14 +50,31 @@
 
 
 <div class="col-md-8" style="height:1000px">
-    <div class="panel panel-default" style="margin:2px;">
-        <div id="flow-panel" class='col-md-12' style="position:absolute;height:80%;">
-        </div>
+    <div class="row" style="margin-top: 5px;height: 55px;">
+        <alert *ngIf="messageInfo.MessageType == null" type="success" class="col-md-11">
+            <strong>Tip: </strong> please create the new flow relationship, the flow include only one trigger and one more than action.
+        </alert>
+        <alert *ngIf="messageInfo?.MessageType == 3" type="success" class="col-md-11">
+            <strong>Success: </strong> {{messageInfo.Message}}
+        </alert>
+        <alert *ngIf="messageInfo?.MessageType == 0" type="info" class="col-md-11">
+            <strong>Info: </strong> {{messageInfo.Message}}
+        </alert>
+        <alert *ngIf="messageInfo?.MessageType == 1" type="warning" class="col-md-11">
+            <strong>Warning: </strong> {{messageInfo.Message}}
+        </alert>
+        <alert *ngIf="messageInfo?.MessageType == 2" type="danger" class="col-md-11">
+            <strong>Error: </strong> {{messageInfo.Message}}
+        </alert>
+        <button type="button" style="height:50px;" class="btn btn-success btn-sm col-md-1" (click)="saveFlow()">
+        Save Flow
+            </button>
+    </div>
+    <div id="flow-panel" class='col-md-12 flowPanel'>
     </div>
 </div>
 
 <div class="col-sm-2">
-
 </div>
 </div>
 
@@ -177,42 +192,4 @@
             </div>
         </div>
     </ng-template>
-
-
 </div>
-
-<!-- <div class="flow-fluid">
-        <div class="row">
-            <div class="col-md-2">
-                <div class="panel panel-default" style="margin:2px;height:400px">
-                    <div class="panel-body">
-                        <div id="control-panel">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6" style="height:400px">
-                <div class="panel panel-default" style="margin:2px;height:400px">
-                    <div class="panel-body">
-                        <div id="flow-panel" class='col-md-12' style="position:absolute;height:100%">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-default" style="margin:2px;height:400px">
-                    <div class="panel-body">
-                        Data Preview
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <hr>
-    <div class="footer">
-        <div class="container">
-            <p>Make Data Collecting Interesting :)</p>
-        </div>
-    </div> -->>Make Data Collecting Interesting :)</p>
-        </div>
-    </div> -->
