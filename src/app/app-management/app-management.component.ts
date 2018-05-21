@@ -6,9 +6,10 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { IfStmt } from '@angular/compiler';
 import { AnonymousSubject } from 'rxjs/internal/Subject';
 import { debug } from 'util';
-import * as flow from '../../assets/flow';
+import { jsPlumb } from '../../../node_modules/jsplumb/dist/js/jsplumb';
+import * as $ from 'jquery'
 
-declare var Foo: any;
+
 
 @Component({
   selector: 'app-app-management',
@@ -16,6 +17,7 @@ declare var Foo: any;
   styleUrls: ['./app-management.component.css']
 })
 export class AppManagementComponent implements OnInit {
+
 
 
   constructor(private tankService: TankService, private modalService: BsModalService) { }
@@ -26,9 +28,142 @@ export class AppManagementComponent implements OnInit {
   };
   ngOnInit(){
     this.BuildData();
-    debugger;
-    flow
   }
+
+  ngAfterViewInit(){
+    this.jsplumbDraw();
+};
+
+
+
+
+  jsplumbDraw(){
+    let that = this;
+    let location = null;
+    let instance = jsPlumb.getInstance();
+    
+    debugger;
+    buildListener($(".liSide"));
+    
+    function buildListener(nodes){
+        nodes.attr("draggable", "true").on("dragstart", function(event){
+        location = {"X": event.target.offsetLeft, "Y": event.target.offsetTop};
+        let param = event.target.id + "_" + event.currentTarget.getAttribute("elementflag") + "_" + event.target.textContent;
+        event.originalEvent.dataTransfer.setData("text", param);
+      });
+      
+      $("#flow-panel").on("dragover", function(event){
+        event.preventDefault();
+      }).on("drop", function(event){
+        debugger;
+        var inputString = event.originalEvent.dataTransfer.getData("text");
+        var valueToBind = inputString.substring(0,inputString.lastIndexOf("_"));
+        var valueToDisplay = inputString.substring(inputString.lastIndexOf("_") + 1, inputString.length)
+        let type = inputString.substring(inputString.indexOf("_")+1, inputString.lastIndexOf("_"))
+        let localX = '' + event.originalEvent.offsetX + 'px';
+        let localY = '' + event.originalEvent.offsetY + 'px';
+        if(type == '1'){
+          if(that.ActiveTrigger != null && that.ActiveTrigger != '' && that.ActiveTrigger != "undefined"){
+            console.log("current flow has more than one trigger, so can't move the new trigger.");
+            // rollback location
+          }else{
+            event.preventDefault();
+            let newOne = buildNewDocument({X: localX, Y: localY}, valueToBind, valueToDisplay);
+            buildDragAttribute(instance, newOne, type)
+            that.ActiveTrigger = valueToBind;
+          }
+        }else if(type == '2'){
+          event.preventDefault();
+          let newOne = buildNewDocument({X: localX, Y: localY}, valueToBind, valueToDisplay);
+          buildDragAttribute(instance, newOne, type)
+          that.ActiveActions.push(valueToBind);
+        }else{
+          console.log("move failed");
+        }
+      });
+      debugger;
+      jsPlumb.fire("jsFlowLoaded", instance);
+    }
+
+    function buildNewDocument(location, id, value){
+      let newDoc = "<div id=" + id +"></div>";
+      $("#flow-panel").append(newDoc);
+      $("#"+ id).css({'width':'120', 'height':'50', 'position':'absolute','top':location.Y, 'left':location.X, 'border': '2px #9DFFCA solid', 'cursor' : 'pointer'}).attr('align','center').text(value);
+      return $('#'+ id)[0];
+    }
+
+    function buildDragAttribute(instance, doc, type){
+      if(type == "1"){
+        // let formStyle = {
+        //   isSource: true,
+        //   endpoint: ["Dot", {radius: 5}],
+        //   EndpointHoverStyle : null,
+        //   EndpointHoverStyles : [ null, null ],
+        //   PaintStyle : { lineWidth : 8, strokeStyle : "#456" },
+        //   connectorStyle:{ strokeStyle:"#316b31", lineWidth:6 }
+        // }
+
+             var connectorPaintStyle = {
+                  lineWidth: 4,
+                  strokeStyle: "#61B7CF",
+                  joinstyle: "round",
+                  outlineColor: "white",
+                  outlineWidth: 2
+              };
+
+              var connectorHoverStyle = {
+                  lineWidth: 4,
+                  strokeStyle: "#216477",
+                  outlineWidth: 2,
+                  outlineColor: "white"
+              };
+        var formStyle = {
+                     isSource: true,   
+                     endpoint: ["Dot", { radius: 8 }], 
+                     paintStyle: { stroke: "#FF8891", fill: "transparent", strokeWidth: 2},
+                     connector: ["Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
+                     maxConnections: -1,  
+                     HoverPaintStyle : {stroke:"#7073EB" },
+                     EndpointHoverStyle : {stroke:"#7073EB" },
+                     connectorStyle:{ stroke:"#7073EB", strokeWidth:3 },
+                    //  overlays : [["Arrow", { width: 10, length: 10, location: 1 }]]
+                     connectorOverlays: [["Arrow", { width: 10, length: 10, location: 1 }],
+                     ["Label", {label:"Adapter", location:0.5, id:"myLabel", events: {
+                      "click": function(label, event){
+                         console.log("adapter");
+                      }
+                    }}]]
+                    };
+        instance.addEndpoint(doc, formStyle);
+      }else if(type == "2"){
+        var toStyle = {
+          isTarget: true,   
+          endpoint: ["Dot", { radius: 8 }], 
+          paintStyle: { stroke: "#FF8891", fill: "transparent", strokeWidth: 2},
+          connector: ["Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
+          maxConnections: -1,  
+          HoverPaintStyle : {stroke:"#7073EB" },
+          EndpointHoverStyle : {stroke:"#7073EB" },
+          connectorOverlays: [["Arrow", { width: 10, length: 10, location: 1 }]]};
+        instance.addEndpoint(doc, toStyle);
+      }
+      instance.draggable(doc.id, {containment: "flow-panel"});
+    }
+  }
+
+
+
+  addFlowship(){
+
+  }
+
+
+
+
+    // let instance = jsPlumb.getInstance();
+    // instance.draggable("test");
+    // instance.draggable($(".liSide"));
+ 
 
   public Containers: Array<TankModel>;
   public newOneFlag: boolean = false;
@@ -36,6 +171,23 @@ export class AppManagementComponent implements OnInit {
   public newTrigger: TriggerModel;
   public newAction: ActionModel;
   public SideTree: Tree;
+  public instance: any;
+  public ActiveTrigger: any;
+  public ActiveActions: Array<any> = new Array<any>();
+  public Offset: any;
+
+  showhideLi(): any {
+    return {
+      "visibility": "hidden"
+    };
+}
+
+  //#region jsplumb
+
+
+
+  //#endregion
+
 
   BuildData = function (){
     this.Containers = this.tankService.InitData();
@@ -61,7 +213,7 @@ export class AppManagementComponent implements OnInit {
           } as ActionChild;
           actionChildTreeList.push(actionChild);
         });
-        
+
 
         let triggerTree = new TriggerTree();
         triggerTree.ExpansionFlag = false;

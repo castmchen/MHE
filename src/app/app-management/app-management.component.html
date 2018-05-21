@@ -2,64 +2,65 @@
     <div class="col-sm-2">
         <div class="sidebar">
             <button type="button" class="btn btn-success btn-sm sideContainer" (click)="addNewContainer(newContainerTemplate)">
-                        Add new Container
-                      </button>
-            <ul *ngFor="let containerNode of SideTree.TreeRoot" class="list-group ulSide">
-                <span (click)="showHideContainer(containerNode)" class="ulContainer">
-                        <i *ngIf="containerNode.ExpansionFlag" class="fa fa-minus"></i>
-                        <i *ngIf="!containerNode.ExpansionFlag" class="fa fa-plus"></i>
-                    {{containerNode.ContainerName}}
-                </span>
-                <div *ngIf="containerNode.ExpansionFlag">
-                    <li class="list-group-item liSide" (click)="showHideTrigger(containerNode.TriggerTree)">
-                        <span style="margin-left:20px;">
-                            <!-- <i [ngClass]="{'fa fa-minus': containerNode.TriggerTree.ExpansionFlag, 'fa fa-plus': !containerNode.TriggerTree.ExpansionFlag}"></i> -->
-                            <i *ngIf="containerNode.TriggerTree.ExpansionFlag" class="fa fa-minus"></i>
-                            <i *ngIf="!containerNode.TriggerTree.ExpansionFlag" class="fa fa-plus"></i>
-                            {{containerNode.TriggerTree.TriggerNodeName}}
-                        </span>
-                    </li>
-                    <div *ngIf="containerNode.TriggerTree.ExpansionFlag">
-                        <li *ngFor="let trigger of containerNode.TriggerTree.TriggerChild" class="list-group-item liSide">
-                            <span style="margin-left:40px">
-                            {{trigger.TriggerChildName}}
-                        </span>
-                        </li>
-                    </div>
-
-                    <li class="list-group-item liSide" (click)="showHideAction(containerNode.ActionTree)">
+                            Add new Container
+                          </button>
+            <div *ngFor="let containerNode of SideTree.TreeRoot" [ngClass]="{'list-group ulSide': containerNode.ExpansionFlag, 'list-group ulSideClose': !containerNode.ExpansionFlag}">
+                <div (click)="showHideContainer(containerNode)" class="ulContainer" style="height:40px">
+                    <i *ngIf="containerNode.ExpansionFlag" class="fa fa-minus"></i>
+                    <i *ngIf="!containerNode.ExpansionFlag" class="fa fa-plus"></i> {{containerNode.ContainerName}}
+                </div>
+                <div [ngClass]="{ 'liShow': containerNode.ExpansionFlag, 'liHide': !containerNode.ExpansionFlag} ">
+                    <div [ngClass]="{'middleLi': !containerNode.ExpansionFlag}" (click)="showHideTrigger(containerNode.TriggerTree)">
                         <span style="margin-left:20px;">
                                 <!-- <i [ngClass]="{'fa fa-minus': containerNode.TriggerTree.ExpansionFlag, 'fa fa-plus': !containerNode.TriggerTree.ExpansionFlag}"></i> -->
-                                <i *ngIf="containerNode.ActionTree.ExpansionFlag" class="fa fa-minus"></i>
-                                <i *ngIf="!containerNode.ActionTree.ExpansionFlag" class="fa fa-plus"></i>
-                                {{containerNode.ActionTree.ActionNodeName}}
-                            </span>
-                    </li>
-                    <div *ngIf="containerNode.ActionTree.ExpansionFlag">
-                        <li *ngFor="let trigger of containerNode.ActionTree.ActionChild" class="list-group-item liSide">
-                            <span style="margin-left:40px">
-                                {{trigger.ActionChildName}}
-                            </span>
-                        </li>
+                                <i *ngIf="containerNode.TriggerTree.ExpansionFlag" class="fa fa-minus"></i>
+                                <i *ngIf="!containerNode.TriggerTree.ExpansionFlag" class="fa fa-plus"></i>
+                                {{containerNode.TriggerTree.TriggerNodeName}}
+                                <div [ngClass]="{ 'liShow':containerNode.TriggerTree.ExpansionFlag, 'liHide': !containerNode.TriggerTree.ExpansionFlag} ">
+                                    <div *ngFor="let trigger of containerNode.TriggerTree.TriggerChild" id="{{trigger.TriggerChildId}}" elementflag="1" class="liSide">
+                                        <span style="margin-left:40px">
+                                                    {{trigger.TriggerChildName}} 
+                                                </span>
                     </div>
                 </div>
-            </ul>
-        </div>
-    </div>
+                </span>
+
+            </div>
 
 
-    <div class="col-sm-8">
-        <div class="panel panel-default" style="margin:2px;height:400px">
-            <div class="panel-body">
-                <div id="flow-panel" class='col-md-12' style="position:absolute;height:100%">
-                </div>
+            <div (click)="showHideAction(containerNode.ActionTree)">
+                <span style="margin-left:20px;">
+                                    <!-- <i [ngClass]="{'fa fa-minus': containerNode.TriggerTree.ExpansionFlag, 'fa fa-plus': !containerNode.TriggerTree.ExpansionFlag}"></i> -->
+                                    <i *ngIf="containerNode.ActionTree.ExpansionFlag" class="fa fa-minus"></i>
+                                    <i *ngIf="!containerNode.ActionTree.ExpansionFlag" class="fa fa-plus"></i>
+                                    {{containerNode.ActionTree.ActionNodeName}}
+                                    <div [ngClass]="{ 'liShow':containerNode.ActionTree.ExpansionFlag, 'liHide': !containerNode.ActionTree.ExpansionFlag} ">
+                                        <div *ngFor="let action of containerNode.ActionTree.ActionChild" id="{{action.ActionChildId}}" elementflag="2" class="liSide">
+                                            <span style="margin-left:40px">
+                                                                {{action.ActionChildName}}
+                                                            </span>
             </div>
         </div>
+        </span>
+
     </div>
 
-    <div class="col-sm-2">
-        3
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="col-md-8" style="height:1000px">
+    <div class="panel panel-default" style="margin:2px;">
+        <div id="flow-panel" class='col-md-12' style="position:absolute;height:80%;">
+        </div>
     </div>
+</div>
+
+<div class="col-sm-2">
+
+</div>
 </div>
 
 <!-- popup -->
@@ -68,8 +69,8 @@
         <div class="modal-header">
             <h4 class="modal-title pull-left">Add Container</h4>
             <button type="button" class="close pull-right" aria-label="Close" (click)="closeContainer()">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
+                        <span aria-hidden="true">&times;</span>
+                        </button>
         </div>
         <div class="modal-body">
             <div class="input-group input-group-sm mb-3">
@@ -112,11 +113,11 @@
 
             <div style="margin:20px;" *ngIf="!newTrigger">
                 <!-- <ul class="list-group">
-                    <li *ngFor="let trigger of newContainer.Triggers" class=" list-group-item d-flex justify-content-between align-items-center ">
-                        {{trigger.Name}}
-                        <span class="badge badge-primary badge-pill ">{{trigger.Actions.Count()}}</span>
-                    </li>
-                </ul> -->
+                        <li *ngFor="let trigger of newContainer.Triggers" class=" list-group-item d-flex justify-content-between align-items-center ">
+                            {{trigger.Name}}
+                            <span class="badge badge-primary badge-pill ">{{trigger.Actions.Count()}}</span>
+                        </li>
+                    </ul> -->
                 <div *ngFor="let trigger of newContainer.Triggers ">
                     <div>
                         <span>Trigger Name: {{trigger.Name}}</span>
@@ -145,9 +146,9 @@
                             <h6 class="mb-1 ">Action Details: </h6>
                             <a *ngFor="let action of newContainer.Actions " href="javascript:void(0)" class="list-group-item-action flex-column align-items-start ">
                                 <!-- <div class="d-flex w-100 justify-content-between ">
-                                    <h6 class="mb-1 ">Details: </h6>
-                                    <small class="text-muted ">{{ action.Name }}</small>
-                                </div> -->
+                                        <h6 class="mb-1 ">Details: </h6>
+                                        <small class="text-muted ">{{ action.Name }}</small>
+                                    </div> -->
                                 <p class="mb-1 ">{{ action.Discription }}</p>
                                 <small class="text-muted ">{{ action.Discription }}</small>
                             </a>
@@ -163,51 +164,55 @@
 
             <!-- action -->
             <!-- 
-            <div class="modal-header ">
-                <h4 class="modalo-title pull-left ">Action</h4>
-            </div> -->
+                <div class="modal-header ">
+                    <h4 class="modalo-title pull-left ">Action</h4>
+                </div> -->
 
             <!-- foot -->
             <div class="input-group input-group-sm mb-3 ">
                 <input style="visibility:hidden " type="text " class="form-control " aria-label="Small " aria-describedby="inputGroup-sizing-sm ">
                 <button type="button " class="btn btn-primary " (click)="saveNewContainer()">
-                            Save Container
-                          </button>
+                                Save Container
+                              </button>
             </div>
         </div>
     </ng-template>
+
+
 </div>
 
 <!-- <div class="flow-fluid">
-    <div class="row">
-        <div class="col-md-2">
-            <div class="panel panel-default" style="margin:2px;height:400px">
-                <div class="panel-body">
-                    <div id="control-panel">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="panel panel-default" style="margin:2px;height:400px">
+                    <div class="panel-body">
+                        <div id="control-panel">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="height:400px">
+                <div class="panel panel-default" style="margin:2px;height:400px">
+                    <div class="panel-body">
+                        <div id="flow-panel" class='col-md-12' style="position:absolute;height:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default" style="margin:2px;height:400px">
+                    <div class="panel-body">
+                        Data Preview
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6" style="height:400px">
-            <div class="panel panel-default" style="margin:2px;height:400px">
-                <div class="panel-body">
-                    <div id="flow-panel" class='col-md-12' style="position:absolute;height:100%">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-default" style="margin:2px;height:400px">
-                <div class="panel-body">
-                    Data Preview
-                </div>
-            </div>
-        </div>
     </div>
-</div>
-<hr>
-<div class="footer">
-    <div class="container">
-        <p>Make Data Collecting Interesting :)</p>
-    </div>
-</div> -->
+    <hr>
+    <div class="footer">
+        <div class="container">
+            <p>Make Data Collecting Interesting :)</p>
+        </div>
+    </div> -->>Make Data Collecting Interesting :)</p>
+        </div>
+    </div> -->

@@ -1,14 +1,3 @@
-var flow = function() {
-
-    return {
-        addNewDraggableNode: function() {
-
-        },
-
-    }
-}()
-
-
 function addNode(parentId, nodeId, nodeLable, position) {
     var panel = d3.select("#" + parentId);
     panel.append('div').style('width', '120px').style('height', '50px')
