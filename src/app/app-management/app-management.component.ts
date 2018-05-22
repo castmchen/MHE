@@ -22,10 +22,10 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
 export class AppManagementComponent implements OnInit {
   @ViewChild('adapter') adapter: ModalDirective;
   constructor(private tankService: TankService, private modalService: BsModalService) { 
-    this.triggerName = 'Sample Trigger';
-    this.actionName = 'Sample Action';
-    this.triggerPropeties = ['trigger 1', 'trigger 2', 'trigger 3'];
-    this.actionPropeties = ['action 1', 'action 2', 'action 3'];
+    this.triggerName = 'Trigger Name';
+    this.actionName = 'Action Name';
+    this.triggerPropeties = ['T property 1', 'T porperty 2', 'T property 3'];
+    this.actionPropeties = ['A property 1', 'A property 2', 'A property 3'];
     this.mappings = [];
   }
   modalRef: BsModalRef;
@@ -396,9 +396,9 @@ export class AppManagementComponent implements OnInit {
     }
   }
 
-  mapNewAdapter(): void {
-    this.mappings.push({TriggerProperty:'', ActionProperty:''} as AdapterMapping);
-  }
+  // mapNewAdapter(): void {
+  //   this.mappings.push({TriggerProperty:'', ActionProperty:''} as AdapterMapping);
+  // }
 //#endregion
 
 }
