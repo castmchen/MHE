@@ -21,7 +21,13 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
 })
 export class AppManagementComponent implements OnInit {
   @ViewChild('adapter') adapter: ModalDirective;
-  constructor(private tankService: TankService, private modalService: BsModalService) { }
+  constructor(private tankService: TankService, private modalService: BsModalService) { 
+    this.triggerName = 'Sample Trigger';
+    this.actionName = 'Sample Action';
+    this.triggerPropeties = ['trigger 1', 'trigger 2', 'trigger 3'];
+    this.actionPropeties = ['action 1', 'action 2', 'action 3'];
+    this.mappings = [];
+  }
   modalRef: BsModalRef;
   config = {
     backdrop: true,
@@ -56,7 +62,13 @@ export class AppManagementComponent implements OnInit {
   public activeActions: Array<any> = new Array<any>();
   public Offset: any;
   public messageInfo: MessageModel = new MessageModel();
-
+  triggerName:string;
+  actionName:string;
+  triggerPropeties : string[];
+  actionPropeties : string[];
+  selectedTriggerOption:string;
+  selectedActionOption: string;
+  mappings:AdapterMapping[];
 
   BuildData = function (){
     this.containers = this.tankService.InitData();
@@ -383,7 +395,10 @@ export class AppManagementComponent implements OnInit {
       instance.draggable(doc.id, {containment: "flow-panel"});
     }
   }
-  
+
+  mapNewAdapter(): void {
+    this.mappings.push({TriggerProperty:'', ActionProperty:''} as AdapterMapping);
+  }
 //#endregion
 
 }
@@ -434,5 +449,10 @@ export enum MessageEnum{
 export class MessageModel{
   public MessageType: MessageEnum;
   public Message: string;
+}
+
+export class AdapterMapping{
+  public TriggerProperty: string;
+  public ActionProperty: string;
 }
 
