@@ -24,8 +24,13 @@ export class AppManagementComponent implements OnInit {
   constructor(private tankService: TankService, private modalService: BsModalService) { 
     this.triggerName = 'Trigger Name';
     this.actionName = 'Action Name';
-    this.triggerPropeties = ['T property 1', 'T porperty 2', 'T property 3'];
-    this.actionPropeties = ['A property 1', 'A property 2', 'A property 3'];
+    this.triggerPropeties = [{Name: 'T property 1'} as TriggerProperty, 
+                              {Name: 'T property 2'} as TriggerProperty,
+                              {Name: 'T property 3'} as TriggerProperty]; 
+
+    this.actionPropeties = [{Name: 'A property 1'} as ActionProperty,
+                            {Name: 'A property 2'} as ActionProperty,
+                            {Name: 'A property 3'} as ActionProperty];
     this.mappings = [];
   }
   modalRef: BsModalRef;
@@ -64,10 +69,8 @@ export class AppManagementComponent implements OnInit {
   public messageInfo: MessageModel = new MessageModel();
   triggerName:string;
   actionName:string;
-  triggerPropeties : string[];
-  actionPropeties : string[];
-  selectedTriggerOption:string;
-  selectedActionOption: string;
+  triggerPropeties : TriggerProperty[];
+  actionPropeties : ActionProperty[];
   mappings:AdapterMapping[];
 
   BuildData = function (){
@@ -396,9 +399,15 @@ export class AppManagementComponent implements OnInit {
     }
   }
 
-  // mapNewAdapter(): void {
-  //   this.mappings.push({TriggerProperty:'', ActionProperty:''} as AdapterMapping);
-  // }
+  saveAdapter(): void {
+    this.mappings = [];
+    this.actionPropeties.forEach(aa => {
+      this.mappings.push({TriggerProperty:aa.trigger, ActionProperty:aa.Name} as AdapterMapping);
+    });
+
+    console.log(this.mappings);
+    this.hideAdapter();
+  }
 //#endregion
 
 }
@@ -454,5 +463,13 @@ export class MessageModel{
 export class AdapterMapping{
   public TriggerProperty: string;
   public ActionProperty: string;
+}
+
+export class ActionProperty{
+  public Name: string;
+}
+
+export class TriggerProperty{
+  public Name: string;
 }
 

@@ -206,27 +206,19 @@
                 </div>
                 <!--Property List-->
                 <div style="width: 100%; margin-left: 10px; margin-top: 10px">
-                    <div style="float: left;width: 40%">
+                    <div style="float: left;width: 50%">
                         <p>Action:{{ actionName }}</p>
-                        <p class="col-sm-9 form-control" *ngFor="let a of actionPropeties">{{ a }}: </p>
+                        <p class="col-sm-9 form-control" *ngFor="let a of actionPropeties">{{ a.Name }}: </p>
                     </div> 
-                    <div style="float: left;width: 40%">
+                    <div style="float: left;width: 50%">
                         <p>Trigger:{{ triggerName }}</p>
-                        <select *ngFor="let a of actionPropeties"  style="margin-top:16px;" class="col-sm-9 form-control" [(ngModel)]="selectedActionOption" name="selectedActionOption">  
-                            <option [ngValue]=""></option>  
-                            <option class="col-md-1" *ngFor="let t of triggerPropeties" [value]="a">{{t}}</option>  
+                        <div *ngFor="let a of actionPropeties">
+                        <select style="margin-top:16px;" class="col-sm-9 form-control" [(ngModel)]= "a.trigger" >  
+                            <option [ngValue]=""></option>
+                            <option class="col-md-1" *ngFor="let t of triggerPropeties" [value]="t.Name">{{t.Name}}    
+                            </option>  
                         </select> 
                     </div>
-
-                    <div *ngFor="let m of mappings" index="1" style="width: 100%;">
-                        <select style="float:left; width:30%; margin-top: 5px" class="form-control" [(ngModel)]="selectedTriggerOption" name="selectedTriggerOption">  
-                            <option [ngValue]=""></option>  
-                            <option class="col-md-1" *ngFor="let t of triggerPropeties" [value]="t">{{t}}</option>  
-                        </select> 
-                        <select style="float:left; width:30%; margin-top: 5px;margin-left: 50px" class="form-control" [(ngModel)]="selectedActionOption" name="selectedActionOption">  
-                            <option [ngValue]=""></option>  
-                            <option class="col-md-1" *ngFor="let a of actionPropeties" [value]="a">{{a}}</option>  
-                        </select> 
                     </div>
                 </div>
                 <!-- foot -->
