@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { TankModel, TriggerModel, ActionModel, FlowModel, FlowActionModel } from '../model/tank-model';
 import { TankService } from '../service/tank-service.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -10,6 +10,7 @@ import { jsPlumb } from '../../../node_modules/jsplumb/dist/js/jsplumb';
 import * as $ from 'jquery';
 import { Action } from 'rxjs/internal/scheduler/Action';
 import { forEach } from '@angular/router/src/utils/collection';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 
 
 
@@ -19,7 +20,7 @@ import { forEach } from '@angular/router/src/utils/collection';
   styleUrls: ['./app-management.component.css']
 })
 export class AppManagementComponent implements OnInit {
-
+  @ViewChild('adapter') adapter: ModalDirective;
   constructor(private tankService: TankService, private modalService: BsModalService) { }
   modalRef: BsModalRef;
   config = {
@@ -33,7 +34,16 @@ export class AppManagementComponent implements OnInit {
 
   ngAfterViewInit(){
     this.jsplumbDraw();
-};
+  };
+
+  showAdapter(): void {
+    this.adapter.config = this.config;
+    this.adapter.show();
+  }
+ 
+  hideAdapter(): void {
+    this.adapter.hide();
+  }
 
   public containers: Array<TankModel>;
   public newOneFlag: boolean = false;
@@ -47,11 +57,6 @@ export class AppManagementComponent implements OnInit {
   public Offset: any;
   public messageInfo: MessageModel = new MessageModel();
 
-  showhideLi(): any {
-    return {
-      "visibility": "hidden"
-    };
-}
 
   BuildData = function (){
     this.containers = this.tankService.InitData();
@@ -344,7 +349,7 @@ export class AppManagementComponent implements OnInit {
                      connectorOverlays: [["Arrow", { width: 10, length: 10, location: 1 }],
                      ["Label", {label:"Adapter", location:0.5, id:"myLabel", events: {
                       "click": function(label, event){
-                         console.log("adapter");
+                         that.showAdapter();
                       }
                     }}]]
                     };
