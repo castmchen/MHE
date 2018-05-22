@@ -4,6 +4,10 @@ export class ConnectorModel {
     destription: string;
     triggers: Array<trigger>;
     actions: Array<action>;
+    constructor(){
+        this.triggers = new Array<trigger>();
+        this.actions = new Array<action>();
+    }
 }
 
 export class trigger{
@@ -19,7 +23,7 @@ export class trigger{
     updatedDateTime: Date;
     inputJson: Array<property>;
     constructor(){
-
+        this.inputJson = new Array<property>();
     }
 }
 
@@ -37,7 +41,7 @@ export class action{
     updatedDatetime: Date;
     inputJson:Array<property>;
     constructor(){
-
+        this.inputJson = new Array<property>();
     }
 }
 
