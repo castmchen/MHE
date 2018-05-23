@@ -1,16 +1,20 @@
 <div class="row">
     <div class="col-sm-2">
         <div class="sidebar">
-            <button type="button" class="btn btn-success btn-sm sideContainer" (click)="addNewContainer(newContainerTemplate)">
+            <!-- <button type="button" class="btn btn-success btn-sm sideContainer" (click)="addNewContainer(newContainerTemplate)">
                             Add New Container
-                          </button>
-            <div *ngFor="let containerNode of sideTree.TreeRoot" [ngClass]="{'list-group ulSide': containerNode.ExpansionFlag, 'list-group ulSideClose': !containerNode.ExpansionFlag}">
+                          </button> -->
+            <div style="height:50px; display: inline-flex; width: 100%">
+                <input type="text" id="keyword" class="form-control" style="height:100%" data-toggle="tooltip" data-placement="bottom" title="Tooltip on top" placeholder="Keywords">
+                <button type="button" class="btn btn-info" (click)="searchByKeyword()">Search</button>
+            </div>
+            <div *ngFor="let containerNode of sideTree.TreeRoot" [ngClass]="{'list-group ulSide': containerNode.ExpansionFlag, 'list-group ulSideClose middleLi': !containerNode.ExpansionFlag}">
                 <div (click)="showHideContainer(containerNode)" class="ulContainer" style="height:40px">
                     <i *ngIf="containerNode.ExpansionFlag" class="fa fa-minus"></i>
                     <i *ngIf="!containerNode.ExpansionFlag" class="fa fa-plus"></i> {{containerNode.ContainerName}}
                 </div>
                 <div [ngClass]="{ 'liShow': containerNode.ExpansionFlag, 'liHide': !containerNode.ExpansionFlag} ">
-                    <div [ngClass]="{'middleLi': !containerNode.ExpansionFlag}" (click)="showHideTrigger(containerNode.TriggerTree)">
+                    <div [ngClass]="{'middleLi': containerNode.ExpansionFlag && !containerNode.TriggerTree.ExpansionFlag }" (click)="showHideTrigger(containerNode.TriggerTree)">
                         <span style="margin-left:20px;">
                                 <!-- <i [ngClass]="{'fa fa-minus': containerNode.TriggerTree.ExpansionFlag, 'fa fa-plus': !containerNode.TriggerTree.ExpansionFlag}"></i> -->
                                 <i *ngIf="containerNode.TriggerTree.ExpansionFlag" class="fa fa-minus"></i>
@@ -18,17 +22,16 @@
                                 {{containerNode.TriggerTree.TriggerNodeName}}
                                 <div [ngClass]="{ 'liShow':containerNode.TriggerTree.ExpansionFlag, 'liHide': !containerNode.TriggerTree.ExpansionFlag} ">
                                     <div *ngFor="let trigger of containerNode.TriggerTree.TriggerChild" id="{{trigger.TriggerChildId}}" elementflag="1" class="liSide">
-                                        <span style="margin-left:40px">
+                                        <span style="margin-left:40px; height:30px;">
                                                     {{trigger.TriggerChildName}} 
                                                 </span>
                     </div>
                 </div>
                 </span>
-
             </div>
 
 
-            <div (click)="showHideAction(containerNode.ActionTree)">
+            <div [ngClass]="{'middleLi': containerNode.ExpansionFlag && !containerNode.ActionTree.ExpansionFlag }" (click)="showHideAction(containerNode.ActionTree)">
                 <span style="margin-left:20px;">
                                     <!-- <i [ngClass]="{'fa fa-minus': containerNode.TriggerTree.ExpansionFlag, 'fa fa-plus': !containerNode.TriggerTree.ExpansionFlag}"></i> -->
                                     <i *ngIf="containerNode.ActionTree.ExpansionFlag" class="fa fa-minus"></i>
@@ -36,7 +39,7 @@
                                     {{containerNode.ActionTree.ActionNodeName}}
                                     <div [ngClass]="{ 'liShow':containerNode.ActionTree.ExpansionFlag, 'liHide': !containerNode.ActionTree.ExpansionFlag} ">
                                         <div *ngFor="let action of containerNode.ActionTree.ActionChild" id="{{action.ActionChildId}}" elementflag="2" class="liSide">
-                                            <span style="margin-left:40px">
+                                            <span style="margin-left:40px; height:30px;">
                                                                 {{action.ActionChildName}}
                                                             </span>
             </div>

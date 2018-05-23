@@ -51,6 +51,7 @@ export class AppManagementComponent implements OnInit {
   public newTrigger: TriggerModel;
   public newAction: ActionModel;
   public sideTree: Tree;
+  public treeContainer: Tree;
   public instance: any;
   public activeTrigger: any;
   public activeActions: Array<any> = new Array<any>();
@@ -61,7 +62,7 @@ export class AppManagementComponent implements OnInit {
   BuildData = function (){
     this.containers = this.tankService.InitData();
     if(this.containers != null && typeof(this.containers) != undefined && this.containers.length > 0){
-      this.sideTree = new Tree();
+      this.treeContainer = new Tree();
       this.containers.forEach(container => {
         let triggerChildTreeList = new Array<TriggerChild>();
         container.Triggers.forEach(trigger => {
@@ -99,7 +100,8 @@ export class AppManagementComponent implements OnInit {
         containerTree.TriggerTree = triggerTree;
         containerTree.ActionTree = actionTree;
 
-        this.sideTree.TreeRoot.push(containerTree);
+        this.treeContainer.TreeRoot.push(containerTree);
+        this.sideTree = this.treeContainer;
       });
     }
   };
@@ -147,7 +149,7 @@ export class AppManagementComponent implements OnInit {
   saveNewContainer = function(){
     this.containers.unshift(this.newContainer);
     var newContainerTree = this.convertModelToTree(this.newContainer);
-    this.sideTree.TreeRoot.unshift(newContainerTree);
+    this.treeContainer.TreeRoot.unshift(newContainerTree);
     this.closeContainer();
   }
 
@@ -194,6 +196,60 @@ export class AppManagementComponent implements OnInit {
     })
     return rootNode;
   }
+
+  searchByKeyword = () => {
+    var keyword = (document.getElementById('keyword') as HTMLInputElement).value;
+
+    if(keyword != null && keyword != '' && typeof(keyword) != undefined){
+      let tempTreeContainer = new Tree();
+      tempTreeContainer.TreeRoot =  new Array<ContainerTree>();
+      for(var i in this.treeContainer.TreeRoot){
+        let tempRoot = this.treeContainer.TreeRoot[i];
+        if(tempRoot.ContainerName.indexOf(keyword) > -1){
+          tempTreeContainer.TreeRoot.push(tempRoot);
+        }else{
+          let newContainerTree = new ContainerTree();
+          newContainerTree.ContainerId =  tempRoot.ContainerId
+          newContainerTree.ContainerName = tempRoot.ContainerName;
+          newContainerTree.TriggerTree = null;
+          newContainerTree.ActionTree = null;
+
+          let newTriggerTree = new TriggerTree();
+          for(var l in tempRoot.TriggerTree.TriggerChild){
+            let tempTrigger = tempRoot.TriggerTree.TriggerChild[l];
+            if(tempTrigger.TriggerChildName.includes(keyword)){
+              newTriggerTree.TriggerChild.push(tempTrigger);
+            }
+          }
+
+          let newActionTree = new ActionTree();
+          for(var k in tempRoot.ActionTree.ActionChild){
+            let tempAction = tempRoot.ActionTree.ActionChild[k];
+            if(tempAction.ActionChildName.includes(keyword)){
+              newActionTree.ActionChild.push(tempAction);
+            }
+          }
+          if(newTriggerTree.TriggerChild.length > 0){
+            newContainerTree.TriggerTree = newTriggerTree;
+          }
+
+          if(newActionTree.ActionChild.length > 0){
+            newContainerTree.ActionTree = newActionTree;
+          }
+
+          if(newContainerTree.TriggerTree != null || newContainerTree.ActionTree != null){
+            tempTreeContainer.TreeRoot.push(newContainerTree);
+          }
+        }
+      }
+      this.sideTree = tempTreeContainer;
+    }
+  }
+
+  recurrence(name,){
+
+  }
+
 
   saveFlow(){
     if(this.activeTrigger == null || this.activeActions.length == 0){
@@ -243,21 +299,6 @@ export class AppManagementComponent implements OnInit {
     console.log("The new flow has been saved successfully.");
     }
 
-    // showError(messageInfo: MessageModel){
-    //   switch(messageInfo.MessageType){
-    //     case MessageEnum.Info:{
-
-    //     };
-    //     case MessageEnum.Wainning: {
-
-    //     };
-    //     case MessageEnum.Error: {
-
-    //     };
-
-    //     default: break;
-    //   }
-    // }
 
   //#region draw
 
@@ -280,7 +321,7 @@ export class AppManagementComponent implements OnInit {
         var inputString = event.originalEvent.dataTransfer.getData("text");
         var valueToBind = inputString.substring(0,inputString.lastIndexOf("_"));
         var valueToDisplay = inputString.substring(inputString.lastIndexOf("_") + 1, inputString.length)
-        let type = inputString.substring(inputString.indexOf("_")+1, inputString.lastIndexOf("_"))
+        let type = inputString.substring(inputString.indexOf("_") + 1, inputString.lastIndexOf("_"))
         let localX = '' + event.originalEvent.offsetX + 'px';
         let localY = '' + event.originalEvent.offsetY + 'px';
         if(type == '1'){
@@ -385,6 +426,7 @@ export class AppManagementComponent implements OnInit {
   }
   
 //#endregion
+
 
 }
 
