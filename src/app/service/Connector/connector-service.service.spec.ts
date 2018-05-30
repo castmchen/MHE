@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { ConnectorServiceService } from './connector-service.service';
+import { ConnectorService } from './connector-service.service';
 
-describe('ConnectorServiceService', () => {
+describe('ConnectorService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ConnectorServiceService]
+      providers: [ConnectorService]
     });
   });
 
-  it('should be created', inject([ConnectorServiceService], (service: ConnectorServiceService) => {
+  it('should be created', inject([ConnectorService], (service: ConnectorService) => {
     expect(service).toBeTruthy();
   }));
 });

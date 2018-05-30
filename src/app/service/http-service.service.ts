@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Observable, of, observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { LogService } from './log-service.service';
 import { Options } from 'selenium-webdriver/firefox';
 
 const httpOptions = {
-  headers: new HttpHeaders( { 'Content-Type': 'application/json'} )
+  // headers: new HttpHeaders( { 'Content-Type': 'application/json', 'Access-Control-Request-Method': 'POST, OPTIONS, GET', 'Access-Control-Request-Headers': 'Content-Type'} )
+  headers: new HttpHeaders( { 'Content-Type': 'application/json' } )
 };
 
 @Injectable({
@@ -17,12 +18,12 @@ export class HttpService {
 
   constructor(private httpClient: HttpClient, private logService: LogService) { }
 
-  HttpGet<T>(apiUrl: string): Observable<T>{
+  HttpGet<T>(apiUrl: string){
     if(apiUrl == null || apiUrl == ''){
       return null;
     }
 
-    this.httpClient.get<T>(apiUrl).pipe(
+    return this.httpClient.get<T>(apiUrl).pipe(
       catchError(this.handleError)
     );
   }
@@ -32,7 +33,7 @@ export class HttpService {
       return null;
     }
     
-    this.httpClient.post<T>(apiUrl, t, httpOptions).pipe(
+    return this.httpClient.post<T>(apiUrl, t, httpOptions).pipe(
       catchError(this.handleError)
     );
   }

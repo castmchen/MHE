@@ -3,8 +3,7 @@ import { NgModule } from '@angular/core';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ModalModule } from 'ngx-bootstrap/modal'
-import { HttpClient, HttpHeaders, HttpErrorResponse } from "@angular/common/http";
-import { HttpClientModule }    from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHeaders, HttpErrorResponse } from "@angular/common/http";
 import { AppComponent } from './app.component';
 import { AppManagementComponent } from './app-management/app-management.component';
 import { AppFlowComponent } from './app-flow/app-flow.component';
@@ -19,7 +18,8 @@ import { MainComponent } from './main/main.component';
 import { setTheme } from 'ngx-bootstrap/utils';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
-import { TankService } from './service/tank-service.service';
+import { ConnectorService } from './service/Connector/connector-service.service';
+import { CswitchComponent } from './cswitch/cswitch.component'
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginComponent},
@@ -36,8 +36,10 @@ const appRoutes: Routes = [
     AppFlowComponent,
     LoginComponent,
     MainComponent,
+    CswitchComponent,
   ],
   imports: [
+    RouterModule.forRoot(appRoutes, { enableTracing:true }),
     BsDropdownModule.forRoot(),
     ButtonsModule.forRoot(),
     TabsModule.forRoot(),
@@ -45,15 +47,14 @@ const appRoutes: Routes = [
     AlertModule.forRoot(),
     BrowserModule,
     FormsModule,
-    HttpClientModule,
-    RouterModule.forRoot(appRoutes, { enableTracing:true })
+    HttpClientModule
   ],
   providers: [
     LogService,
     HttpService,
     HttpClient,
     UserStateServiceService,
-    TankService
+    ConnectorService
   ],
   bootstrap: [AppComponent]
 })

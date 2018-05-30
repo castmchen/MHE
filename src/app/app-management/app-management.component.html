@@ -1,50 +1,47 @@
 <div class="row">
-    <div class="col-sm-2">
+    <div class="col-md-2">
         <div class="sidebar">
-            <!-- <button type="button" class="btn btn-success btn-sm sideContainer" (click)="addNewContainer(newContainerTemplate)">
-                            Add New Container
-                          </button> -->
+            <!-- <button type="button" class="btn btn-success btn-sm sideContainer" (click)="addnewConnector(newConnectorTemplate)"> Add New Container </button> -->
             <div style="height:50px; display: inline-flex; width: 100%">
                 <input type="text" id="keyword" class="form-control" style="height:100%" data-toggle="tooltip" data-placement="bottom" title="Tooltip on top" placeholder="Keywords">
-                <button type="button" class="btn btn-info" (click)="searchByKeyword()">Search</button>
-            </div>
-            <div *ngFor="let containerNode of sideTree.TreeRoot" [ngClass]="{'list-group ulSide': containerNode.ExpansionFlag, 'list-group ulSideClose middleLi': !containerNode.ExpansionFlag}">
-                <div (click)="showHideContainer(containerNode)" class="ulContainer" style="height:40px">
-                    <i *ngIf="containerNode.ExpansionFlag" class="fa fa-minus"></i>
-                    <i *ngIf="!containerNode.ExpansionFlag" class="fa fa-plus"></i> {{containerNode.ContainerName}}
+                <div style="background:white">
+                    <button type="button" style="height:100%" class="btn btn-outline-secondary" (click)="searchByKeyword()">Search</button>
                 </div>
-                <div [ngClass]="{ 'liShow': containerNode.ExpansionFlag, 'liHide': !containerNode.ExpansionFlag} ">
-                    <div [ngClass]="{'middleLi': containerNode.ExpansionFlag && !containerNode.TriggerTree.ExpansionFlag }" (click)="showHideTrigger(containerNode.TriggerTree)">
-                        <span style="margin-left:20px;">
-                                <!-- <i [ngClass]="{'fa fa-minus': containerNode.TriggerTree.ExpansionFlag, 'fa fa-plus': !containerNode.TriggerTree.ExpansionFlag}"></i> -->
-                                <i *ngIf="containerNode.TriggerTree.ExpansionFlag" class="fa fa-minus"></i>
-                                <i *ngIf="!containerNode.TriggerTree.ExpansionFlag" class="fa fa-plus"></i>
-                                {{containerNode.TriggerTree.TriggerNodeName}}
-                                <div [ngClass]="{ 'liShow':containerNode.TriggerTree.ExpansionFlag, 'liHide': !containerNode.TriggerTree.ExpansionFlag} ">
-                                    <div *ngFor="let trigger of containerNode.TriggerTree.TriggerChild" id="{{trigger.TriggerChildId}}" elementflag="1" class="liSide">
-                                        <span style="margin-left:40px; height:30px;">
-                                                    {{trigger.TriggerChildName}} 
-                                                </span>
+            </div>
+            <div *ngIf="sideTree?.TreeRoot">
+                <div *ngFor="let connectorNode of sideTree.TreeRoot" [ngClass]="{'list-group ulSide': connectorNode.ExpansionFlag, 'list-group ulSideClose middleLi': !connectorNode.ExpansionFlag}">
+                    <div (click)="showHideConnector(connectorNode)" class="ulContainer" style="height:40px">
+                        <i *ngIf="connectorNode.ExpansionFlag" class="fa fa-minus"></i>
+                        <i *ngIf="!connectorNode.ExpansionFlag" class="fa fa-plus"></i> {{connectorNode.ConnectorName}}
                     </div>
+                    <div [ngClass]="{ 'liShow': connectorNode.ExpansionFlag, 'liHide': !connectorNode.ExpansionFlag} ">
+                        <div *ngIf='connectorNode.TriggerTree' [ngClass]="{'middleLi': connectorNode.ExpansionFlag && !connectorNode.TriggerTree.ExpansionFlag }" (click)="showHideTrigger(connectorNode.TriggerTree)">
+                            <span style="margin-left:20px;">
+                                <i *ngIf="connectorNode.TriggerTree.ExpansionFlag" class="fa fa-minus"></i>
+                                <i *ngIf="!connectorNode.TriggerTree.ExpansionFlag" class="fa fa-plus"></i>
+                                {{connectorNode.TriggerTree.TriggerNodeName}}
+                                <div [ngClass]="{ 'liShow':connectorNode.TriggerTree.ExpansionFlag, 'liHide': !connectorNode.TriggerTree.ExpansionFlag} ">
+                                    <div *ngFor="let trigger of connectorNode.TriggerTree.TriggerChild" id="{{trigger.TriggerChildId}}" elementflag="1" class="liSide">
+                                        <span style="margin-left:40px; height:30px;"> {{trigger.TriggerChildName}} </span>
+                            <input type="hidden" value="{{connectorNode.ConnectorId}}">
+                        </div>
+                    </div>
+                    </span>
                 </div>
-                </span>
-            </div>
 
-
-            <div [ngClass]="{'middleLi': containerNode.ExpansionFlag && !containerNode.ActionTree.ExpansionFlag }" (click)="showHideAction(containerNode.ActionTree)">
-                <span style="margin-left:20px;">
-                                    <!-- <i [ngClass]="{'fa fa-minus': containerNode.TriggerTree.ExpansionFlag, 'fa fa-plus': !containerNode.TriggerTree.ExpansionFlag}"></i> -->
-                                    <i *ngIf="containerNode.ActionTree.ExpansionFlag" class="fa fa-minus"></i>
-                                    <i *ngIf="!containerNode.ActionTree.ExpansionFlag" class="fa fa-plus"></i>
-                                    {{containerNode.ActionTree.ActionNodeName}}
-                                    <div [ngClass]="{ 'liShow':containerNode.ActionTree.ExpansionFlag, 'liHide': !containerNode.ActionTree.ExpansionFlag} ">
-                                        <div *ngFor="let action of containerNode.ActionTree.ActionChild" id="{{action.ActionChildId}}" elementflag="2" class="liSide">
-                                            <span style="margin-left:40px; height:30px;">
-                                                                {{action.ActionChildName}}
-                                                            </span>
+                <div [ngClass]="{'middleLi': connectorNode.ExpansionFlag && !connectorNode.ActionTree.ExpansionFlag }" (click)="showHideAction(connectorNode.ActionTree)">
+                    <span style="margin-left:20px;">
+                                    <i *ngIf="connectorNode.ActionTree.ExpansionFlag" class="fa fa-minus"></i>
+                                    <i *ngIf="!connectorNode.ActionTree.ExpansionFlag" class="fa fa-plus"></i>
+                                    {{connectorNode.ActionTree.ActionNodeName}}
+                                    <div [ngClass]="{ 'liShow':connectorNode.ActionTree.ExpansionFlag, 'liHide': !connectorNode.ActionTree.ExpansionFlag} ">
+                                        <div *ngFor="let action of connectorNode.ActionTree.ActionChild" id="{{action.ActionChildId}}" elementflag="2" class="liSide">
+                                            <span style="margin-left:40px; height:30px;">{{action.ActionChildName}}</span>
+                    <input type="hidden" value="{{connectorNode.ConnectorId}}">
+                </div>
             </div>
+            </span>
         </div>
-        </span>
     </div>
 </div>
 </div>
@@ -52,61 +49,78 @@
 </div>
 
 
-<div class="col-md-8" style="height:1000px">
-    <div class="row" style="margin-top: 5px;height: 55px;">
-        <alert *ngIf="messageInfo.MessageType == null" type="success" class="col-md-11">
+<div class="col-md-8">
+    <div class="row" style="margin-left: auto;">
+        <alert *ngIf="messageInfo.MessageType == null" type="success" class="col-md-12">
             <strong>Tip: </strong> please create the new flow relationship, the flow include only one trigger and one more than action.
         </alert>
-        <alert *ngIf="messageInfo?.MessageType == 3" type="success" class="col-md-11">
+        <alert *ngIf="messageInfo?.MessageType == 3" type="success" class="col-md-12">
             <strong>Success: </strong> {{messageInfo.Message}}
         </alert>
-        <alert *ngIf="messageInfo?.MessageType == 0" type="info" class="col-md-11">
+        <alert *ngIf="messageInfo?.MessageType == 0" type="info" class="col-md-12">
             <strong>Info: </strong> {{messageInfo.Message}}
         </alert>
-        <alert *ngIf="messageInfo?.MessageType == 1" type="warning" class="col-md-11">
+        <alert *ngIf="messageInfo?.MessageType == 1" type="warning" class="col-md-12">
             <strong>Warning: </strong> {{messageInfo.Message}}
         </alert>
-        <alert *ngIf="messageInfo?.MessageType == 2" type="danger" class="col-md-11">
+        <alert *ngIf="messageInfo?.MessageType == 2" type="danger" class="col-md-12">
             <strong>Error: </strong> {{messageInfo.Message}}
         </alert>
-        <button type="button" style="height:50px;" class="btn btn-success btn-sm col-md-1" (click)="saveFlow()">
-        Save Flow
-            </button>
     </div>
+    <div class="row input-group mb-3" style="margin-left:auto;">
+        <input type="text" class="form-control" [(ngModel)]="currentFlow.Name" placeholder="Flow's name" aria-label="Flow's name" aria-describedby="basic-addon2">
+        <input type="text" class="form-control" [(ngModel)]="currentFlow.Description" placeholder="Flow's description" aria-label="Flow's description" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" (click)="saveFlow()">Save Flow</button>
+        </div>
+    </div>
+
     <div id="flow-panel" class='col-md-12 flowPanel'>
     </div>
+
+</div>
+<div class="col-md-2">
+    <div class="siderightbar">
+        <div style="width:100%; height:50px; background:white">
+            <button type="button" style="width:100%; height:50px;" class="btn btn-outline-secondary" (click)="viewFlow()">View Flow</button>
+        </div>
+        <ul class="list-group">
+            <div *ngFor="let flow of flows" id="{{flow.Id}}" class="ulRight" (click)="selectFlow(flow.Id)">
+                <cswitch class="" style="margin-top:5px;"></cswitch>
+                <li class="liRight">
+                    <span>{{flow.Name}}</span>
+                </li>
+            </div>
+        </ul>
+    </div>
+</div>
 </div>
 
-<div class="col-sm-2">
-</div>
-</div>
-
-<!-- popup -->
+<!-- connector popup -->
 <div>
-    <ng-template #newContainerTemplate class="modal fade row" bsModal #staticModal="bs-modal" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-static-name">
+    <ng-template #newConnectorTemplate class="modal fade row" bsModal #staticModal="bs-modal" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-static-name">
         <div class="modal-header">
-            <h4 class="modal-title pull-left">Add Container</h4>
-            <button type="button" class="close pull-right" aria-label="Close" (click)="closeContainer()">
+            <h4 class="modal-title pull-left">Add Connctor</h4>
+            <button type="button" class="close pull-right" aria-label="Close" (click)="closeConnector()">
                         <span aria-hidden="true">&times;</span>
                         </button>
         </div>
         <div class="modal-body">
             <div class="input-group input-group-sm mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">Container Name</span>
+                    <span class="input-group-text">Connector Name</span>
                 </div>
-                <input type="text" [(ngModel)]="newContainer.Name" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                <input type="text" [(ngModel)]="newConnector.Name" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
             </div>
 
             <div class="input-group input-group-sm mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">Container Description</span>
+                    <span class="input-group-text">Connector Description</span>
                 </div>
-                <input type="text" [(ngModel)]="newContainer.Discription" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                <input type="text" [(ngModel)]="newConnector.Discription" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
             </div>
 
             <!-- trigger -->
-
             <div class="modal-header">
                 <h6 class="modal-title pull-left">Add Trriger</h6>
                 <i class="fa fa-plus plusTrigger" (click)="addNewTrigger()"></i>
@@ -131,12 +145,12 @@
 
             <div style="margin:20px;" *ngIf="!newTrigger">
                 <!-- <ul class="list-group">
-                        <li *ngFor="let trigger of newContainer.Triggers" class=" list-group-item d-flex justify-content-between align-items-center ">
+                        <li *ngFor="let trigger of newConnector.Triggers" class=" list-group-item d-flex justify-content-between align-items-center ">
                             {{trigger.Name}}
                             <span class="badge badge-primary badge-pill ">{{trigger.Actions.Count()}}</span>
                         </li>
                     </ul> -->
-                <div *ngFor="let trigger of newContainer.Triggers ">
+                <div *ngFor="let trigger of newConnector.Triggers ">
                     <div>
                         <span>Trigger Name: {{trigger.Name}}</span>
                         <br>
@@ -162,7 +176,7 @@
                         </div>
                         <div *ngIf="!newAction " style="margin:10px;" class="list-group ">
                             <h6 class="mb-1 ">Action Details: </h6>
-                            <a *ngFor="let action of newContainer.Actions " href="javascript:void(0)" class="list-group-item-action flex-column align-items-start ">
+                            <a *ngFor="let action of newConnector.Actions " href="javascript:void(0)" class="list-group-item-action flex-column align-items-start ">
                                 <!-- <div class="d-flex w-100 justify-content-between ">
                                         <h6 class="mb-1 ">Details: </h6>
                                         <small class="text-muted ">{{ action.Name }}</small>
@@ -189,51 +203,50 @@
             <!-- foot -->
             <div class="input-group input-group-sm mb-3 ">
                 <input style="visibility:hidden " type="text " class="form-control " aria-label="Small " aria-describedby="inputGroup-sizing-sm ">
-                <button type="button " class="btn btn-primary " (click)="saveNewContainer()">
-                                Save Container
+                <button type="button " class="btn btn-primary " (click)="savenewConnector()">
+                                Save Connecotr
                               </button>
             </div>
         </div>
     </ng-template>
+</div>
 
-
-    <!-- adapterPopup -->
-    <div bsModal #adapter="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-child-name">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 id="dialog-child-name" class="modal-title pull-left">Adapter</h4>
-                    <button type="button" class="close pull-right" aria-label="Close" (click)="hideAdapter()">
+<!-- adapter popup -->
+<div bsModal #adapter="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-child-name">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="dialog-child-name" class="modal-title pull-left">Adapter</h4>
+                <button type="button" class="close pull-right" aria-label="Close" (click)="hideAdapter()">
                         <span aria-hidden="true">&times;</span>
                     </button>
+            </div>
+            <!--Property List-->
+            <div style="width: 100%; margin-left: 10px; margin-top: 10px">
+                <div style="float: left;width: 50%">
+                    <p>Action:{{ actionName }}</p>
+                    <p class="col-sm-9 form-control" *ngFor="let a of actionProperties">{{ a.Name }} </p>
                 </div>
-                <!--Property List-->
-                <div style="width: 100%; margin-left: 10px; margin-top: 10px">
-                    <div style="float: left;width: 50%">
-                        <p>Action:{{ actionName }}</p>
-                        <p class="col-sm-9 form-control" *ngFor="let a of actionPropeties">{{ a.Name }}: </p>
-                    </div> 
-                    <div style="float: left;width: 50%">
-                        <p>Trigger:{{ triggerName }}</p>
-                        <div *ngFor="let a of actionPropeties">
-                        <select style="margin-top:16px;" class="col-sm-9 form-control" [(ngModel)]= "a.trigger" >  
+                <div style="float: left;width: 50%">
+                    <p>Trigger:{{ triggerName }}</p>
+                    <div *ngFor="let a of actionProperties">
+                        <select style="margin-top:16px;" class="col-sm-9 form-control" [(ngModel)]="a.trigger">  
                             <option [ngValue]=""></option>
-                            <option class="col-md-1" *ngFor="let t of triggerPropeties" [value]="t.Name">{{t.Name}}    
+                            <option class="col-md-1" *ngFor="let t of triggerProperties" [value]="t.Name">{{t.Name}}    
                             </option>  
-                        </select> 
-                    </div>
+                        </select>
                     </div>
                 </div>
-                <!-- foot -->
-                <div>
-                    <hr/>
-                </div>
-                <div class="input-group input-group-sm mb-3 " >
+            </div>
+            <!-- foot -->
+            <div>
                 <hr/>
-                    <button type="button "  style="margin-right: 10px;" class="btn btn-primary " (click)="saveAdapter()">
+            </div>
+            <div class="input-group input-group-sm mb-3 ">
+                <hr/>
+                <button type="button " style="margin-right: 10px;" class="btn btn-primary " (click)="hideAdapter()">
                         Save Adapter
                     </button>
-                </div>
             </div>
         </div>
     </div>

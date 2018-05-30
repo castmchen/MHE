@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TankModel, FlowModel, TriggerModel, ActionModel, FlowActionModel } from '../model/tank-model';
+import { ConnectorModel, TriggerModel, ActionModel } from '../model/connector-model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +9,8 @@ export class TankService {
 
   constructor() { }
 
-  InitData(): Array<TankModel>{
-    let tankList = new Array<TankModel>();
+  InitData(): Array<ConnectorModel>{
+    let tankList = new Array<ConnectorModel>();
     // let tankInfo1: TankModel = new TankModel();
     // tankInfo1.Id = 1;
     // tankInfo1.Name = "container1";
@@ -46,7 +46,7 @@ export class TankService {
     // tankInfo2.Actions.push(actionInfo2);
 
 
-    let tankInfo3: TankModel = new TankModel();
+    let tankInfo3: ConnectorModel = new ConnectorModel();
     tankInfo3.Id = 3;
     tankInfo3.Name = "container3";
     tankInfo3.Discription = "container3";
@@ -59,7 +59,7 @@ export class TankService {
     actionInfo3.Id = 333;
     actionInfo3.Name = "action3";
     actionInfo3.Discription = "action3";
-    actionInfo3.TriggerId = triggerInfo3.Id;
+    actionInfo3.Id = triggerInfo3.Id;
     tankInfo3.Actions.push(actionInfo3);
 
     //#region  flow

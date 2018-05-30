@@ -1,51 +1,43 @@
 export class ConnectorModel {
-    connectorId: string;
-    connectorName: string;
-    destription: string;
-    triggers: Array<trigger>;
-    actions: Array<action>;
     constructor(){
-        this.triggers = new Array<trigger>();
-        this.actions = new Array<action>();
+        this.Triggers = new Array<TriggerModel>();
+        this.Actions = new Array<ActionModel>();
     }
+    public Id: any;
+    public Name: string;
+    public Discription: string;
+    public Triggers: Array<ActionModel>;
+    public Actions: Array<ActionModel>;
 }
 
-export class trigger{
-    triggerId: string;
-    triggerName: string;
-    connectorId: string;
-    destription: string;
-    type: string;
-    status: string;
-    createdBy: string;
-    createdDateTime: Date
-    updatedBy: string;
-    updatedDateTime: Date;
-    inputJson: Array<property>;
-    constructor(){
-        this.inputJson = new Array<property>();
-    }
+export class TriggerModel{
+    public Id: any;
+    public Name: string;
+    public Discription: string;
+    public ConnectorId: any;
 }
 
-export class action{
-    actionId: string;
-    actionName: string;
-    connectorId: string;
-    description: string;
-    endPoint: string;
-    type: string;
-    status: string;
-    createdBy: string;
-    createdDatetime: Date;
-    updatedBy: string;
-    updatedDatetime: Date;
-    inputJson:Array<property>;
-    constructor(){
-        this.inputJson = new Array<property>();
-    }
+export class ActionModel{
+    public Id: any;
+    public Name: string;
+    public Discription: string;
+    public ConnectorId: any;
 }
 
-export class property{
-    name: string;
-    description: string;
+export class Propertry{
+    public Name: string;
+    public Description: string;
+}
+
+export class AdapterModel{
+    constructor(){
+        this.Trigger = new Array<Propertry>();
+        this.Action = new Array<Propertry>();
+    }
+    public Trigger: Array<Propertry>;
+    public Action: Array<Propertry>;
+}
+
+export class Connection{
+    
 }

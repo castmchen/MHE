@@ -1,6 +1,6 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { TankModel, TriggerModel, ActionModel, FlowModel, FlowActionModel } from '../model/tank-model';
-import { TankService } from '../service/tank-service.service';
+import { ConnectorModel, TriggerModel, ActionModel, Propertry } from '../model/connector-model';
+import { ConnectorService } from '../service/Connector/connector-service.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { IfStmt } from '@angular/compiler';
@@ -11,7 +11,9 @@ import * as $ from 'jquery';
 import { Action } from 'rxjs/internal/scheduler/Action';
 import { forEach } from '@angular/router/src/utils/collection';
 import { ModalDirective } from 'ngx-bootstrap/modal';
-
+import { connectorDomain, action } from '../domain/connector';
+import { ConnectorTree, ConnectorNode, TriggerNode, TriggerChildNode, ActionNode, ActionChildNode } from '../model/connector-tree';
+import { FlowModel } from '../model/flow-model';
 
 
 @Component({
@@ -21,18 +23,7 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
 })
 export class AppManagementComponent implements OnInit {
   @ViewChild('adapter') adapter: ModalDirective;
-  constructor(private tankService: TankService, private modalService: BsModalService) { 
-    this.triggerName = 'Trigger Name';
-    this.actionName = 'Action Name';
-    this.triggerPropeties = [{Name: 'T property 1'} as TriggerProperty, 
-                              {Name: 'T property 2'} as TriggerProperty,
-                              {Name: 'T property 3'} as TriggerProperty]; 
-
-    this.actionPropeties = [{Name: 'A property 1'} as ActionProperty,
-                            {Name: 'A property 2'} as ActionProperty,
-                            {Name: 'A property 3'} as ActionProperty];
-    this.mappings = [];
-  }
+  constructor(private connectorService: ConnectorService, private modalService: BsModalService) { }
   modalRef: BsModalRef;
   config = {
     backdrop: true,
@@ -40,196 +31,150 @@ export class AppManagementComponent implements OnInit {
   };
 
   ngOnInit(){
-    this.BuildData();
+    this.connectorService.getConnector(p=>{ this.BuildData(p)});
   }
 
   ngAfterViewInit(){
-    this.jsplumbDraw();
+    
   };
 
-  showAdapter(): void {
-    this.adapter.config = this.config;
-    this.adapter.show();
+  ngAfterViewChecked(){
+    if(this.redrawFlag){
+      this.jsplumbDraw();
+      this.redrawFlag = false;
+    }
+  }
+
+  public connectorModels: Array<ConnectorModel>;
+  public newOneFlag: boolean = false;
+  public newConnector: ConnectorModel;
+  public newTrigger: TriggerModel;
+  public newAction: ActionModel;
+  public sideTree: ConnectorTree;
+  public treeConnector: ConnectorTree;
+  public instance: any;
+  public activeTrigger: any;
+  public activeActions: Array<any> = new Array<any>();
+  public messageInfo: MessageModel = new MessageModel();
+  public actionProperties: Array<Propertry>;
+  public triggerProperties: Array<Propertry>;
+  public currentFlow: FlowModel= new FlowModel();
+  public flows: Array<FlowModel> = new Array<FlowModel>();
+  public redrawFlag: boolean = false;
+
+  showAdapter(triggerId: any, actionId: any): void {
+    this.connectorService.getAdapterProperties(triggerId, actionId, (p)=>{
+      this.triggerProperties = p.Trigger;
+      this.actionProperties = p.Action;
+      this.adapter.config = this.config;
+      this.adapter.show();
+    });
   }
  
   hideAdapter(): void {
     this.adapter.hide();
   }
 
-  public containers: Array<TankModel>;
-  public newOneFlag: boolean = false;
-  public newContainer: TankModel;
-  public newTrigger: TriggerModel;
-  public newAction: ActionModel;
-  public sideTree: Tree;
-  public treeContainer: Tree;
-  public instance: any;
-  public activeTrigger: any;
-  public activeActions: Array<any> = new Array<any>();
-  public Offset: any;
-  public messageInfo: MessageModel = new MessageModel();
-  triggerName:string;
-  actionName:string;
-  triggerPropeties : TriggerProperty[];
-  actionPropeties : ActionProperty[];
-  mappings:AdapterMapping[];
-
-  BuildData = function (){
-    this.containers = this.tankService.InitData();
-    if(this.containers != null && typeof(this.containers) != undefined && this.containers.length > 0){
-      this.treeContainer = new Tree();
-      this.containers.forEach(container => {
-        let triggerChildTreeList = new Array<TriggerChild>();
-        container.Triggers.forEach(trigger => {
-          let triggerChild =  {
-            TriggerChildId: trigger.Id,
-            TriggerChildName: trigger.Name,
-            IsValid: true
-          } as TriggerChild;
-          triggerChildTreeList.push(triggerChild);
-        });
-
-        let actionChildTreeList = new Array<ActionChild>();
-        container.Actions.forEach(action => {
-          let actionChild = {
-             ActionChildId: action.Id,
-             ActionChildName: action.Name,
-             IsValid: true
-          } as ActionChild;
-          actionChildTreeList.push(actionChild);
-        });
-
-
-        let triggerTree = new TriggerTree();
-        triggerTree.ExpansionFlag = false;
-        triggerTree.TriggerChild = triggerChildTreeList;
-
-        let actionTree = new ActionTree();
-        actionTree.ExpansionFlag = false;
-        actionTree.ActionChild = actionChildTreeList;
-
-        let containerTree = new ContainerTree();
-        containerTree.ContainerId = container.Id;
-        containerTree.ContainerName = container.Name;
-        containerTree.ExpansionFlag = false;
-        containerTree.TriggerTree = triggerTree;
-        containerTree.ActionTree = actionTree;
-
-        this.treeContainer.TreeRoot.push(containerTree);
-        this.sideTree = this.treeContainer;
+  BuildData(models:Array<ConnectorModel>): void{
+    this.connectorModels = models;
+    if(this.connectorModels != null && typeof(this.connectorModels) != undefined && this.connectorModels.length > 0){
+      this.treeConnector = new ConnectorTree();
+      this.connectorModels.forEach(connector => {
+        this.treeConnector.TreeRoot.push(this.convertConnectorModelToTree(connector));
       });
+      this.sideTree = this.treeConnector;
     }
-  };
-
-  addNewContainer = function(newContainerTemplate: TemplateRef<any>){
-    this.BuildNewContainer();
-    this.modalRef = this.modalService.show(newContainerTemplate, this.config);
+    this.redrawFlag = true;
   }
 
-  addNewTrigger = function(){
-    if(this.newContainer.Triggers == null || typeof(this.newContainer.Triggers) == undefined){
-      this.newContainer.Triggers = new Array<TriggerModel>();
+  addNewConnector(newConnectorTemplate: TemplateRef<any>): void{
+    this.BuildNewConnector();
+    this.modalRef = this.modalService.show(newConnectorTemplate, this.config);
+  }
+
+  addNewTrigger(): void{
+    if(this.newConnector.Triggers == null || typeof(this.newConnector.Triggers) == undefined){
+      this.newConnector.Triggers = new Array<TriggerModel>();
     }
      this.newTrigger =  new TriggerModel();
-     this.newTrigger.TankId = this.newContainer.Id;
-     this.newTrigger.Id = this.newContainer.Triggers.length > 0 ? this.newContainer.Triggers[this.newContainer.Triggers.length-1] : 1;
+     this.newTrigger.Id = this.newConnector.Triggers.length > 0 ? this.newConnector.Triggers[this.newConnector.Triggers.length-1] : 1;
+     this.newTrigger.ConnectorId = this.newConnector.Id;
   }
 
-  saveNewTrigger = function(){
-    this.newContainer.Triggers.push(this.newTrigger);
+  saveNewTrigger(): void{
+    this.newConnector.Triggers.push(this.newTrigger);
     this.newTrigger = null;
   }
 
-  addNewAction = function(triggerId : any){
-    if(this.newContainer.Actions == null || typeof(this.newContainer.Actions) == undefined){
-      this.newContainer.Actions = new Array<ActionModel>();
+  addNewAction(triggerId : any): void{
+    if(this.newConnector.Actions == null || typeof(this.newConnector.Actions) == undefined){
+      this.newConnector.Actions = new Array<ActionModel>();
     }
     this.newAction = new ActionModel();
-    this.newAction.TankId = this.newContainer.Id;
-    this.newAction.TriggerId = triggerId;
-    this.newAction.Id =  this.newContainer.Actions.length > 0 ? this.newContainer.Actions[this.newContainer.Actions.length-1] : 1;
+    this.newAction.Id =  this.newConnector.Actions.length > 0 ? this.newConnector.Actions[this.newConnector.Actions.length-1] : 1;
+    this.newAction.ConnectorId = this.newConnector.Id;
   }
 
-  saveNewAction = function(){
-    this.newContainer.Actions.push(this.newAction);
+  saveNewAction(): void{
+    this.newConnector.Actions.push(this.newAction);
     this.newAction = null;
   }
 
-  BuildNewContainer = function(){
-    this.newContainer = new TankModel();
-    this.newContainer.Id = this.containers[this.containers.length - 1].Id + 1;
+  BuildNewConnector(): void{
+    this.newConnector = new ConnectorModel();
+    this.newConnector.Id = this.connectorModels[this.connectorModels.length - 1].Id + 1;
     this.newOneFlag = true;
   }
 
-  saveNewContainer = function(){
-    this.containers.unshift(this.newContainer);
-    var newContainerTree = this.convertModelToTree(this.newContainer);
-    this.treeContainer.TreeRoot.unshift(newContainerTree);
-    this.closeContainer();
+  saveNewConnector(): void{
+    this.connectorModels.unshift(this.newConnector);
+    var newConnectorNode = this.convertConnectorModelToTree(this.newConnector);
+    this.treeConnector.TreeRoot.unshift(newConnectorNode);
+    this.closeConnector();
   }
 
-  closeContainer = function(){
+  closeConnector(): void{
     this.modalRef.hide();
   }
 
-  showHideContainer = function(container){
-    container.ExpansionFlag = !container.ExpansionFlag;
-    container.TriggerTree.ExpansionFlag = false;
-    container.ActionTree.ExpansionFlag = false;
+  showHideConnector(connector): void{
+    connector.ExpansionFlag = !connector.ExpansionFlag;
+    if(connector.TriggerTree){
+      connector.TriggerTree.ExpansionFlag = false;
+    }
+    if(connector.activeTrigger){
+      connector.ActionTree.ExpansionFlag = false;
+    }
   }
 
-  showHideTrigger(triggerTree){
+  showHideTrigger(triggerTree): void{
     triggerTree.ExpansionFlag = !triggerTree.ExpansionFlag;
   }
 
-  showHideAction(actionTree){
+  showHideAction(actionTree): void{
     actionTree.ExpansionFlag = !actionTree.ExpansionFlag;
   }
 
-  convertModelToTree(container: TankModel){
-    let rootNode = new ContainerTree();
-    rootNode.ContainerId = container.Id;
-    rootNode.ContainerName = container.Name;
-    rootNode.ExpansionFlag = false;
-    rootNode.TriggerTree = new TriggerTree();
-    container.Triggers.forEach(p=>{
-      let childNode = {
-        TriggerChildId : p.Id,
-        TriggerChildName: p.Name,
-        IsValid : true
-      } as TriggerChild;
-      rootNode.TriggerTree.TriggerChild.push(childNode);
-    });
-    rootNode.ActionTree = new ActionTree();
-    container.Actions.forEach(p=>{
-      let childNode = {
-         ActionChildId: p.Id,
-         ActionChildName: p.Name,
-         IsValid: true
-      } as ActionChild;
-      rootNode.ActionTree.ActionChild.push(childNode);
-    })
-    return rootNode;
-  }
-
-  searchByKeyword = () => {
+  searchByKeyword(): void{
     var keyword = (document.getElementById('keyword') as HTMLInputElement).value;
-
     if(keyword != null && keyword != '' && typeof(keyword) != undefined){
-      let tempTreeContainer = new Tree();
-      tempTreeContainer.TreeRoot =  new Array<ContainerTree>();
-      for(var i in this.treeContainer.TreeRoot){
-        let tempRoot = this.treeContainer.TreeRoot[i];
-        if(tempRoot.ContainerName.indexOf(keyword) > -1){
-          tempTreeContainer.TreeRoot.push(tempRoot);
+      let tempTree = new ConnectorTree();
+      tempTree.TreeRoot =  new Array<ConnectorNode>();
+      for(var i in this.treeConnector.TreeRoot){
+        let tempRoot = this.treeConnector.TreeRoot[i];
+        if(tempRoot.ConnectorName.indexOf(keyword) > -1){
+          tempTree.TreeRoot.push(tempRoot);
         }else{
-          let newContainerTree = new ContainerTree();
-          newContainerTree.ContainerId =  tempRoot.ContainerId
-          newContainerTree.ContainerName = tempRoot.ContainerName;
-          newContainerTree.TriggerTree = null;
-          newContainerTree.ActionTree = null;
 
-          let newTriggerTree = new TriggerTree();
+          let newConnectorNode = new ConnectorNode();
+          newConnectorNode.ConnectorId =  tempRoot.ConnectorId
+          newConnectorNode.ConnectorName = tempRoot.ConnectorName;
+          newConnectorNode.TriggerTree = null;
+          newConnectorNode.ActionTree = null;
+          newConnectorNode.ExpansionFlag = true;
+
+          let newTriggerTree = new TriggerNode();
+          newTriggerTree.ExpansionFlag = true;
           for(var l in tempRoot.TriggerTree.TriggerChild){
             let tempTrigger = tempRoot.TriggerTree.TriggerChild[l];
             if(tempTrigger.TriggerChildName.includes(keyword)){
@@ -237,7 +182,8 @@ export class AppManagementComponent implements OnInit {
             }
           }
 
-          let newActionTree = new ActionTree();
+          let newActionTree = new ActionNode();
+          newActionTree.ExpansionFlag = true;
           for(var k in tempRoot.ActionTree.ActionChild){
             let tempAction = tempRoot.ActionTree.ActionChild[k];
             if(tempAction.ActionChildName.includes(keyword)){
@@ -245,75 +191,97 @@ export class AppManagementComponent implements OnInit {
             }
           }
           if(newTriggerTree.TriggerChild.length > 0){
-            newContainerTree.TriggerTree = newTriggerTree;
+            newConnectorNode.TriggerTree = newTriggerTree;
           }
 
           if(newActionTree.ActionChild.length > 0){
-            newContainerTree.ActionTree = newActionTree;
+            newConnectorNode.ActionTree = newActionTree;
           }
 
-          if(newContainerTree.TriggerTree != null || newContainerTree.ActionTree != null){
-            tempTreeContainer.TreeRoot.push(newContainerTree);
+          if(newConnectorNode.TriggerTree != null || newConnectorNode.ActionTree != null){
+            tempTree.TreeRoot.push(newConnectorNode);
           }
         }
       }
-      this.sideTree = tempTreeContainer;
+      this.sideTree = tempTree;
+    }else{
+      this.sideTree = this.treeConnector;
     }
+    this.redrawFlag = true;
   }
 
-  recurrence(name,){
-
-  }
-
-
-  saveFlow(){
+  saveFlow(): void{
     if(this.activeTrigger == null || this.activeActions.length == 0){
       this.messageInfo.MessageType = MessageEnum.Error;
-      this.messageInfo.Message = "Please assign a flow, trigger and action can't be null.";
-    }
-    var flowTrigger: TriggerModel;
-    var flowActionList = new Array<FlowActionModel>();
-    var breakTrigger = false;
-    for(var i in this.containers){
-      if(!breakTrigger){
-        var tempId = this.activeTrigger.split('_')[0];
-        for(var j in this.containers[i].Triggers){
-          if(tempId == this.containers[i].Triggers[j].Id){
-            flowTrigger = this.containers[i].Triggers[j];
-            flowTrigger.FlowList = new Array<FlowModel>();
-
-            var flowObj = new FlowModel();
-            flowObj.FlowTankId = this.containers[i].Id;
-            flowObj.FlowNumber = i as any;
-            flowObj.FlowAction = new Array<FlowActionModel>();
-            flowTrigger.FlowList.push(flowObj);
-            break;
-          }
-        }
-      }
-      if(this.activeActions.length > 0){
-        var tempIds = [];
-        this.activeActions.forEach(p => {
-           tempIds.push(p.split('_')[0]);
-        });
-        for(var l in this.containers[i].Actions){
-          var currentAction = this.containers[i].Actions[l];
-          if(tempIds.indexOf(currentAction.Id)){
-            var flowAction = new FlowActionModel();
-            flowAction.FlowActionId = currentAction.Id;
-            flowAction.FlowACtionNumber = l as any;
-            flowActionList.push(flowAction);
-          }
-        }
-      }
-    }
-    flowTrigger.FlowList[0].FlowAction = flowActionList;
-    $('#flow-panel').empty();
-    this.activeTrigger = null;
-    this.activeActions = [];
-    console.log("The new flow has been saved successfully.");
+      this.messageInfo.Message = "please assign a flow, trigger and action can't be null.";
+      return;
     }
 
+    if(this.currentFlow.Name == '' || this.currentFlow.Name == undefined){
+      this.messageInfo.MessageType = MessageEnum.Error;
+      this.messageInfo.Message = "please input a valid flow name, then try save again.";
+      return;
+    }
+
+    this.currentFlow.Trigger = { Id : this.activeTrigger.id.substring(0, this.activeTrigger.id.lastIndexOf("_")), ConnectorId: this.activeTrigger.connectorId } as TriggerModel;
+    this.currentFlow.Actions = new Array<ActionModel>();
+    this.activeActions.forEach(p => {
+      let actionModel = {
+        Id: p.id.substring(0, p.id.lastIndexOf("_")),
+        ConnectorId: p.connectorId
+      } as ActionModel;
+      this.currentFlow.Actions.push(actionModel);
+    });
+    
+
+    this.connectorService.saveFlow(this.currentFlow, (p)=>{
+      this.flows.push(p);
+      this.messageInfo.MessageType = MessageEnum.Success;
+      this.messageInfo.Message= "Save flow successfully.";
+      $('#flow-panel').empty();
+      this.activeTrigger = null;
+      this.activeActions = [];
+      this.currentFlow = new FlowModel();
+      console.log("The new flow has been saved successfully.");
+    });
+    }
+
+    selectFlow(Id: any): void{
+      // document.getElementById(Id).style.background = "rgb(226, 226, 226)";
+      this.currentFlow.Id = Id;
+    }
+
+    viewFlow(): void{
+      $('#flow-panel').empty();
+      this.currentFlow = this.flows.find(p=>p.Id == this.currentFlow.Id);
+      this.drawFlowDetail(this.currentFlow);
+    }
+
+  //#region draw
+
+  drawFlowDetail(flowInfo: FlowModel){
+    let instance = jsPlumb.getInstance();
+    let trigger = flowInfo.Trigger;
+    let actions = flowInfo.Actions;
+
+    let panel = $('#flow-panel');
+    let triggerOffsetX = 10;
+    let triggerOffsetY = panel.height()/2;
+
+    let triggerDom = this.buildNewDocument({X: triggerOffsetX, Y: triggerOffsetY}, trigger.Id + "_1", trigger.ConnectorId, trigger.Name);
+    this.buildDragAttribute(instance, triggerDom, "1");
+
+    let actionOffsetX = panel.width()/2;
+    
+    for(var i = 0; i < actions.length; i++){
+     let actionOffsetY = panel.height()/(actions.length + 1)* (i+1);
+     let actionDom = this.buildNewDocument({X:actionOffsetX, Y:actionOffsetY}, actions[i].Id + "_2", actions[i].ConnectorId, actions[i].Name);
+     this.buildDragAttribute(instance, actionDom, "2");
+     this.buildConnector(instance, triggerDom, actionDom);
+    }     
+  }
+
+  //#endregion
 
   //#region draw
 
@@ -326,168 +294,175 @@ export class AppManagementComponent implements OnInit {
     function buildListener(nodes){
         nodes.attr("draggable", "true").on("dragstart", function(event){
         location = {"X": event.target.offsetLeft, "Y": event.target.offsetTop};
-        let param = event.target.id + "_" + event.currentTarget.getAttribute("elementflag") + "_" + event.target.textContent;
+        let connectorId = event.target.lastElementChild.value;
+        let param = connectorId + "_" + event.target.id + "_" + event.currentTarget.getAttribute("elementflag") + "_" + event.target.textContent;
         event.originalEvent.dataTransfer.setData("text", param);
       });
       
       $("#flow-panel").on("dragover", function(event){
         event.preventDefault();
       }).on("drop", function(event){
-        var inputString = event.originalEvent.dataTransfer.getData("text");
-        var valueToBind = inputString.substring(0,inputString.lastIndexOf("_"));
-        var valueToDisplay = inputString.substring(inputString.lastIndexOf("_") + 1, inputString.length)
-        let type = inputString.substring(inputString.indexOf("_") + 1, inputString.lastIndexOf("_"))
-        let localX = '' + event.originalEvent.offsetX + 'px';
-        let localY = '' + event.originalEvent.offsetY + 'px';
+        let inputString = (event.originalEvent as DragEvent).dataTransfer.getData("text");
+        let valueToBind = inputString.substring(inputString.indexOf("_") + 1, inputString.lastIndexOf("_"));
+        let type = valueToBind.substring(valueToBind.lastIndexOf("_") + 1, valueToBind.length);
+        let valueToDisplay = inputString.substring(inputString.lastIndexOf("_") + 1, inputString.length);
+        let rootId = inputString.substring(0, inputString.indexOf("_"));
+        let localX = '' + (event.originalEvent as DragEvent).offsetX + 'px';
+        let localY = '' + (event.originalEvent as DragEvent).offsetY + 'px';
         if(type == '1'){
-          if(that.activeTrigger != null && that.activeTrigger != '' && that.activeTrigger != "undefined"){
+          if(that.activeTrigger != null && that.activeTrigger != '' && that.activeTrigger != undefined){
             console.log("current flow has more than one trigger, so can't move the new trigger.");
-            // rollback location
           }else{
             event.preventDefault();
-            let newOne = buildNewDocument({X: localX, Y: localY}, valueToBind, valueToDisplay);
-            buildDragAttribute(instance, newOne, type)
-            that.activeTrigger = valueToBind;
+            let newOne = that.buildNewDocument({X: localX, Y: localY}, valueToBind, rootId, valueToDisplay);
+            that.buildDragAttribute(instance, newOne, type);
+            that.activeTrigger = { id: valueToBind, connectorId: rootId };
           }
-        }else if(type == '2'){
+        }else if(type == '2' && document.getElementById(valueToBind) == null){
           event.preventDefault();
-          let newOne = buildNewDocument({X: localX, Y: localY}, valueToBind, valueToDisplay);
-          buildDragAttribute(instance, newOne, type)
-          // that.activeActions.push(valueToBind);
+          let newOne = that.buildNewDocument({X: localX, Y: localY}, valueToBind, rootId, valueToDisplay);
+          that.buildDragAttribute(instance, newOne, type);
         }else{
           console.log("move failed");
         }
       });
       jsPlumb.fire("jsFlowLoaded", instance);
     }
-
-    function buildNewDocument(location, id, value){
-      let newDoc = "<div id=" + id +"></div>";
-      $("#flow-panel").append(newDoc);
-      $("#"+ id).css({'width':'120', 'height':'50', 'position':'absolute','top':location.Y, 'left':location.X, 'border': '2px #9DFFCA solid', 'cursor' : 'pointer'}).attr('align','center').text(value);
-      return $('#'+ id)[0];
-    }
-
-    function buildDragAttribute(instance, doc, type){
-      if(type == "1"){
-        // let formStyle = {
-        //   isSource: true,
-        //   endpoint: ["Dot", {radius: 5}],
-        //   EndpointHoverStyle : null,
-        //   EndpointHoverStyles : [ null, null ],
-        //   PaintStyle : { lineWidth : 8, strokeStyle : "#456" },
-        //   connectorStyle:{ strokeStyle:"#316b31", lineWidth:6 }
-        // }
-
-             var connectorPaintStyle = {
-                  lineWidth: 4,
-                  strokeStyle: "#61B7CF",
-                  joinstyle: "round",
-                  outlineColor: "white",
-                  outlineWidth: 2
-              };
-
-              var connectorHoverStyle = {
-                  lineWidth: 4,
-                  strokeStyle: "#216477",
-                  outlineWidth: 2,
-                  outlineColor: "white"
-              };
-        var formStyle = {
-                     isSource: true,   
-                     endpoint: ["Dot", { radius: 8 }], 
-                     paintStyle: { stroke: "#FF8891", fill: "transparent", strokeWidth: 2},
-                     connector: ["Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
-                     maxConnections: -1,  
-                     HoverPaintStyle : {stroke:"#7073EB" },
-                     EndpointHoverStyle : {stroke:"#7073EB" },
-                     connectorStyle:{ stroke:"#7073EB", strokeWidth:3 },
-                     connectorOverlays: [["Arrow", { width: 10, length: 10, location: 1 }],
-                     ["Label", {label:"Adapter", location:0.5, id:"myLabel", events: {
-                      "click": function(label, event){
-                         that.showAdapter();
-                      }
-                    }}]]
-                    };
-        instance.addEndpoint(doc, formStyle);
-      }else if(type == "2"){
-        var toStyle = {
-          isTarget: true,   
-          endpoint: ["Dot", { radius: 8 }], 
-          paintStyle: { stroke: "#FF8891", fill: "transparent", strokeWidth: 2},
-          connector: ["Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
-          maxConnections: -1,  
-          HoverPaintStyle : {stroke:"#7073EB" },
-          EndpointHoverStyle : {stroke:"#7073EB" },
-          connectorOverlays: [["Arrow", { width: 10, length: 10, location: 1 }]]};
-        instance.addEndpoint(doc, toStyle);
-      }
-
-      instance.bind("connection",function(info, originalEvent){
-        if(info.sourceId == that.activeTrigger){
-          that.activeActions.push(info.targetId);
-        }
-      });
-
-      instance.bind("connectionDetached", function(info,originalEvent){
-        var index = that.activeActions.indexOf(info.targetId);
-        if(info.sourceId == that.activeTrigger && index > -1){
-          that.activeActions.splice(index, 1);
-        }
-      });
-
-      instance.draggable(doc.id, {containment: "flow-panel"});
-    }
   }
-
-  saveAdapter(): void {
-    this.mappings = [];
-    this.actionPropeties.forEach(aa => {
-      this.mappings.push({TriggerProperty:aa.trigger, ActionProperty:aa.Name} as AdapterMapping);
-    });
-
-    console.log(this.mappings);
-    this.hideAdapter();
-  }
+  
 //#endregion
 
 
+//#region draw
+
+ buildNewDocument(location, noodId, rootId, value){
+  let newDoc = "<div id=" + noodId + " connector=" + rootId + "></div>";
+  $("#flow-panel").append(newDoc);
+  $("#"+ noodId).css({'width':'120', 'height':'80', 'position':'absolute','top':location.Y, 'left':location.X, 'border': '2px #ccc solid', 'cursor' : 'pointer'}).attr('align','center').text(value);
+  return $('#'+ noodId)[0];
 }
 
-export class Tree{
-  public TreeRoot: Array<ContainerTree> = new Array<ContainerTree>();
+ buildDragAttribute(instance, doc, type){
+   var that = this;
+  if(type == "1"){
+         var connectorPaintStyle = {
+              lineWidth: 4,
+              strokeStyle: "#61B7CF",
+              joinstyle: "round",
+              outlineColor: "white",
+              outlineWidth: 2
+          };
+
+          var connectorHoverStyle = {
+              lineWidth: 4,
+              strokeStyle: "#216477",
+              outlineWidth: 2,
+              outlineColor: "white"
+          };
+    var formStyle = {
+                 isSource: true,   
+                 endpoint: ["Dot", { radius: 8 }], 
+                 paintStyle: { stroke: "#ccc", fill: "#ccc", strokeWidth: 2},
+                 connector: ["Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
+                 maxConnections: -1,  
+                 HoverPaintStyle : {stroke:"#ccc" },
+                 EndpointHoverStyle : {stroke:"#ccc" },
+                 connectorStyle:{ stroke:"#ccc", strokeWidth:3 },
+                 connectorOverlays: [["Arrow", { width: 10, length: 10, location: 1 }],
+                 ["Label", {label:"Adapter", location:0.5, id:"myLabel", events: {
+                  "click": function(info, event){
+                      let triggerId = info.component.sourceId.substring(0, info.component.sourceId.lastIndexOf("_"));
+                      let actionId = info.component.targetId.substring(0, info.component.targetId.lastIndexOf("_"));
+                      that.showAdapter(triggerId, actionId);
+                  }
+                }}]]
+                };
+    instance.addEndpoint(doc, formStyle);
+  }else if(type == "2"){
+    var toStyle = {
+      isTarget: true,   
+      endpoint: ["Dot", { radius: 8 }], 
+      paintStyle: { stroke: "#ccc", fill: "transparent", strokeWidth: 2},
+      connector: ["Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
+      maxConnections: -1,  
+      HoverPaintStyle : {stroke:"#7073EB" },
+      EndpointHoverStyle : {stroke:"#7073EB" },
+      connectorOverlays: [["Arrow", { width: 10, length: 10, location: 1 }]]};
+    instance.addEndpoint(doc, toStyle);
+  }
+
+  instance.bind("connection",function(info, originalEvent){
+    if(info.sourceId == that.activeTrigger.id){
+      let id: any = info.targetId;
+      let connectorId: any = info.target.attributes["connector"].value;
+      if(!checkIfInclude({id:id, connectorId: connectorId}, that.activeActions, "boolean")){
+        that.activeActions.push({ id: info.targetId, connectorId: connectorId });
+      }
+    }
+  });
+
+  instance.bind("connectionDetached", function(info,originalEvent){
+    let id: any = info.targetId;
+    let connectorId: any = info.target.attributes["connector"].value;
+    let index: any = checkIfInclude({id:id, connectorId: connectorId}, that.activeActions, "int");
+    if(info.sourceId == that.activeTrigger.id && index > -1){
+      that.activeActions.splice(index, 1);
+    }
+  });
+
+  function checkIfInclude(target: any, source: any, returnParam: string){
+    if(returnParam == "boolean"){
+      for(var i in source){
+        if(source[i].id == target.id && source[i].connectorId == target.connectorId){
+          return true;
+        }
+      }                
+      return false; 
+    }else if(returnParam == "int"){
+      for(var i in source){
+        if(source[i].id == target.id && source[i].connectorId == target.connectorId){
+          return i;
+        }
+      }
+      return -1;
+    }
+  }
+
+  instance.draggable(doc.id, {containment: "flow-panel"});
 }
 
-export class ContainerTree{
-  public ContainerId: any;
-  public ContainerName: string;
-  public ExpansionFlag: boolean;
-  public TriggerTree: TriggerTree;
-  public ActionTree: ActionTree;
-};
-
-export class TriggerTree{
-  public TriggerNodeName: string = "Trigger";
-  public ExpansionFlag: boolean;
-  public TriggerChild: Array<TriggerChild> = new Array<TriggerChild>();
+ buildConnector(instance, fromDom, toDom){
+  instance.connect({source: fromDom.id, target: toDom.id});
 }
 
-export class TriggerChild{
-  public TriggerChildId: any;
-  public TriggerChildName: string;
-  public IsValid: boolean;
-}
+//#endregion
 
-export class ActionTree{
-  public ActionNodeName: string = "Action";
-  public ExpansionFlag: boolean;
-  public ActionChild: Array<ActionChild> = new Array<ActionChild>();
-}
 
-export class ActionChild{
-  public ActionChildId: any;
-  public ActionChildName: string;
-  public IsValid: boolean;
+convertConnectorModelToTree(connector: ConnectorModel): ConnectorNode{
+  let rootNode = new ConnectorNode();
+  rootNode.ConnectorId = connector.Id;
+  rootNode.ConnectorName = connector.Name;
+  rootNode.ExpansionFlag = false;
+  rootNode.TriggerTree = new TriggerNode();
+  connector.Triggers.forEach(p=>{
+    let childNode = {
+      TriggerChildId : p.Id,
+      TriggerChildName: p.Name,
+      IsValid : true
+    } as TriggerChildNode;
+    rootNode.TriggerTree.TriggerChild.push(childNode);
+  });
+  rootNode.ActionTree = new ActionNode();
+  connector.Actions.forEach(p=>{
+    let childNode = {
+       ActionChildId: p.Id,
+       ActionChildName: p.Name,
+       IsValid: true
+    } as ActionChildNode;
+    rootNode.ActionTree.ActionChild.push(childNode);
+  })
+  return rootNode;
+}
 }
 
 export enum MessageEnum{
@@ -495,23 +470,10 @@ export enum MessageEnum{
   Wainning = 1,
   Error = 2,
   Success = 3
-}
+};
 
 export class MessageModel{
   public MessageType: MessageEnum;
   public Message: string;
-}
-
-export class AdapterMapping{
-  public TriggerProperty: string;
-  public ActionProperty: string;
-}
-
-export class ActionProperty{
-  public Name: string;
-}
-
-export class TriggerProperty{
-  public Name: string;
-}
+};
 
