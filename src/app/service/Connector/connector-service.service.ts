@@ -3,6 +3,7 @@ import { connectorDomain, flowDomain, trigger, triggerAndActionForAdapt, action,
 import { ConnectorModel, TriggerModel, ActionModel, Propertry, AdapterModel } from '../../model/connector-model';
 import { HttpService } from '../http-service.service';
 import { FlowModel } from '../../model/flow-model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { FlowModel } from '../../model/flow-model';
 export class ConnectorService {
 
   constructor(private httpService: HttpService) { 
-    let baseUrl = "http://localhost:2001/api/";
+    let baseUrl = environment.ApiURL;    
     this.getConnectorUrl = baseUrl + "BusinessesFlow/GetAllConnectorWithTriggerAndAction";
     this.getPropertiesUrl = baseUrl + "BusinessesFlow/GetTrigerAndActionById";
     this.saveFlowUrl = baseUrl + "BusinessesFlow/ConnectionAndFlow";
@@ -197,8 +198,6 @@ export class ConnectorService {
       } as Propertry;
       adapterModel.Action.push(property);
     });
-    adapterModel.TriggerName = adapterInfo.triggerInfo.triggerName;
-    adapterModel.ActionName =adapterInfo.actionInfo.actionName;
     return adapterModel;
   }
 
@@ -213,6 +212,7 @@ export class ConnectorService {
 
   saveFlow(flowModel: FlowModel, callback: any){
     let postData: connectionAndFlow = this.ConvertFlowModelToDomain(flowModel);
+    var aa = JSON.stringify(postData);
     this.httpService.HttpPost<connectionAndFlow>(this.saveFlowUrl, postData).subscribe( (p) => {
       var flowInfo =  this.ConvertFlowDomainToModel(p, flowModel);
       callback(flowInfo);
@@ -220,10 +220,10 @@ export class ConnectorService {
   }
 
   ConvertFlowDomainToModel(flowDomain: any, flowModel: FlowModel): FlowModel{
-    flowModel.Trigger.Name = flowDomain.triggerDetail.triggerName;
+    flowModel.Trigger.Name = flowDomain.trigger.triggerName;
     flowModel.Id = flowDomain.flowId;
     flowModel.Actions.forEach(p=>{
-       var tempFlow = flowDomain.actionDetails.find(pro=>pro.actionId == p.Id && pro.connectorId == p.ConnectorId);
+       var tempFlow = flowDomain.actions.find(pro=>pro.actionId == p.Id && pro.connectorId == p.ConnectorId);
        if(tempFlow != null && tempFlow != undefined){
           p.Name = tempFlow.actionName;
        }
@@ -268,8 +268,7 @@ export class ConnectorService {
     this.httpService.HttpGet<Array<flowDomain>>(this.getFlowUrl + eid).subscribe( p=> {
       let flowModels: Array<FlowModel> = new Array<FlowModel>();
       for(var i in p){
-        var tempId = p[i].flowID;
-        let tempFlow: FlowModel = flowModels.find(p=>p.Id == tempId);
+        let tempFlow: FlowModel = flowModels.find(p=>p.Id == p[i].flowID);
         if(tempFlow != null && tempFlow != undefined){
           tempFlow.Actions.push({Id: p[i].actionId, Name: p[i].actionName} as ActionModel);
         }else{
@@ -277,8 +276,8 @@ export class ConnectorService {
           tempFlow.Id = p[i].flowID;
           tempFlow.Name = p[i].flowName;
           tempFlow.Description = p[i].flowDescription;
-          tempFlow.Trigger = {Id: p[i].triggerId, Name: p[i].triggerName, ConnectorId: p[i].triggerConnectorId} as TriggerModel;
-          tempFlow.Actions.push({Id: p[i].actionId, Name: p[i].actionName, ConnectorId: p[i].actionConnectorId} as ActionModel);
+          tempFlow.Trigger = {Id: p[i].triggerId, Name: p[i].triggerName} as TriggerModel;
+          tempFlow.Actions.push({Id: p[i].actionId, Name: p[i].actionName} as ActionModel);
 
           flowModels.push(tempFlow);
         }
