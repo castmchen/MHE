@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { connectorDomain, trigger, triggerAndActionForAdapt, action, connectionAndFlow, connection, flow, connectionDetail } from '../../domain/connector';
+import { connectorDomain, flowDomain, trigger, triggerAndActionForAdapt, action, connectionAndFlow, connection, flow, connectionDetail } from '../../domain/connector';
 import { ConnectorModel, TriggerModel, ActionModel, Propertry, AdapterModel } from '../../model/connector-model';
 import { HttpService } from '../http-service.service';
 import { FlowModel } from '../../model/flow-model';
@@ -14,9 +14,11 @@ export class ConnectorService {
     this.getConnectorUrl = baseUrl + "BusinessesFlow/GetAllConnectorWithTriggerAndAction";
     this.getPropertiesUrl = baseUrl + "BusinessesFlow/GetTrigerAndActionById";
     this.saveFlowUrl = baseUrl + "BusinessesFlow/ConnectionAndFlow";
+    this.getFlowUrl = baseUrl + "BusinessesFlow/GetFlowByEnterpriseID?enterpriseID=";
   }
   
   private getConnectorUrl: string;
+  private getFlowUrl: string;
   private getPropertiesUrl: string;
   private saveFlowUrl: string;
 
@@ -202,7 +204,7 @@ export class ConnectorService {
   getAdapterProperties(triggerId: any, actionId: any, callback: any){
     let urlParams = "?triggerId=" + triggerId + "&" + "actionId=" + actionId;
     let fullUrl = this.getPropertiesUrl + urlParams;
-    this.httpService.HttpGet<triggerAndActionForAdapt>(fullUrl).subscribe( p =>{ 
+    this.httpService.HttpGet<triggerAndActionForAdapt>(fullUrl).subscribe( p => { 
       callback(this.ConvertAdapterPropertiesDomainToModel(p)); 
     });
   }
@@ -232,7 +234,7 @@ export class ConnectorService {
     let flowDomain: flow = new flow();
     flowDomain.flowName = flowModel.Name;
     flowDomain.description = flowModel.Description;
-    flowDomain.type = "Release";
+    flowDomain.type = "RELEASE";
     flowDomain.enterpriseId = "qiang.c.chen";
 
     let connectionDomain: connection = new connection();
@@ -259,6 +261,29 @@ export class ConnectorService {
     connectionAndFlowDomain.connection = connectionDomain;
 
     return connectionAndFlowDomain;
+  }
+
+  getFlows(eid: string, callback: any){
+    this.httpService.HttpGet<Array<flowDomain>>(this.getFlowUrl + eid).subscribe( p=> {
+      let flowModels: Array<FlowModel> = new Array<FlowModel>();
+      for(var i in p){
+        let tempFlow: FlowModel = flowModels.find(p=>p.Id == p[i].flowID);
+        if(tempFlow != null && tempFlow != undefined){
+          tempFlow.Actions.push({Id: p[i].actionId, Name: p[i].actionName} as ActionModel);
+        }else{
+          let tempFlow: FlowModel = new FlowModel();
+          tempFlow.Id = p[i].flowID;
+          tempFlow.Name = p[i].flowName;
+          tempFlow.Description = p[i].flowDescription;
+          tempFlow.Trigger = {Id: p[i].triggerId, Name: p[i].triggerName} as TriggerModel;
+          tempFlow.Actions.push({Id: p[i].actionId, Name: p[i].actionName} as ActionModel);
+
+          flowModels.push(tempFlow);
+        }
+      }
+
+      callback(flowModels);
+    })
   }
 
 }

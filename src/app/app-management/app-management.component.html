@@ -10,33 +10,33 @@
             </div>
             <div *ngIf="sideTree?.TreeRoot">
                 <div *ngFor="let connectorNode of sideTree.TreeRoot" [ngClass]="{'list-group ulSide': connectorNode.ExpansionFlag, 'list-group ulSideClose middleLi': !connectorNode.ExpansionFlag}">
-                    <div (click)="showHideConnector(connectorNode)" class="ulContainer" style="height:40px">
+                    <div (click)="showHideConnector(connectorNode)" class="ulContainer">
                         <i *ngIf="connectorNode.ExpansionFlag" class="fa fa-minus"></i>
                         <i *ngIf="!connectorNode.ExpansionFlag" class="fa fa-plus"></i> {{connectorNode.ConnectorName}}
                     </div>
-                    <div [ngClass]="{ 'liShow': connectorNode.ExpansionFlag, 'liHide': !connectorNode.ExpansionFlag} ">
+                    <div [ngClass]="{ 'liShow': connectorNode.ExpansionFlag, 'liHide': !connectorNode.ExpansionFlag}" style="padding-left:30px;">
                         <div *ngIf='connectorNode.TriggerTree' [ngClass]="{'middleLi': connectorNode.ExpansionFlag && !connectorNode.TriggerTree.ExpansionFlag }" (click)="showHideTrigger(connectorNode.TriggerTree)">
                             <span style="margin-left:20px;">
                                 <i *ngIf="connectorNode.TriggerTree.ExpansionFlag" class="fa fa-minus"></i>
                                 <i *ngIf="!connectorNode.TriggerTree.ExpansionFlag" class="fa fa-plus"></i>
                                 {{connectorNode.TriggerTree.TriggerNodeName}}
-                                <div [ngClass]="{ 'liShow':connectorNode.TriggerTree.ExpansionFlag, 'liHide': !connectorNode.TriggerTree.ExpansionFlag} ">
+                                <div [ngClass]="{ 'liShow': connectorNode.ExpansionFlag && connectorNode.TriggerTree.ExpansionFlag, 'liHide': !connectorNode.TriggerTree.ExpansionFlag} ">
                                     <div *ngFor="let trigger of connectorNode.TriggerTree.TriggerChild" id="{{trigger.TriggerChildId}}" elementflag="1" class="liSide">
-                                        <span style="margin-left:40px; height:30px;"> {{trigger.TriggerChildName}} </span>
+                                        <span> {{trigger.TriggerChildName}} </span>
                             <input type="hidden" value="{{connectorNode.ConnectorId}}">
                         </div>
                     </div>
                     </span>
                 </div>
 
-                <div [ngClass]="{'middleLi': connectorNode.ExpansionFlag && !connectorNode.ActionTree.ExpansionFlag }" (click)="showHideAction(connectorNode.ActionTree)">
+                <div *ngIf='connectorNode.ActionTree' [ngClass]="{'middleLi': connectorNode.ExpansionFlag && !connectorNode.ActionTree.ExpansionFlag }" (click)="showHideAction(connectorNode.ActionTree)">
                     <span style="margin-left:20px;">
                                     <i *ngIf="connectorNode.ActionTree.ExpansionFlag" class="fa fa-minus"></i>
                                     <i *ngIf="!connectorNode.ActionTree.ExpansionFlag" class="fa fa-plus"></i>
                                     {{connectorNode.ActionTree.ActionNodeName}}
-                                    <div [ngClass]="{ 'liShow':connectorNode.ActionTree.ExpansionFlag, 'liHide': !connectorNode.ActionTree.ExpansionFlag} ">
+                                    <div [ngClass]="{ 'liShow':connectorNode.ExpansionFlag && connectorNode.ActionTree.ExpansionFlag, 'liHide': !connectorNode.ActionTree.ExpansionFlag} ">
                                         <div *ngFor="let action of connectorNode.ActionTree.ActionChild" id="{{action.ActionChildId}}" elementflag="2" class="liSide">
-                                            <span style="margin-left:40px; height:30px;">{{action.ActionChildName}}</span>
+                                            <span>{{action.ActionChildName}}</span>
                     <input type="hidden" value="{{connectorNode.ConnectorId}}">
                 </div>
             </div>
@@ -86,10 +86,10 @@
         </div>
         <ul class="list-group">
             <div *ngFor="let flow of flows" id="{{flow.Id}}" class="ulRight" (click)="selectFlow(flow.Id)">
-                <cswitch class="" style="margin-top:5px;"></cswitch>
-                <li class="liRight">
+                <li class="liRight" style="width:135px;">
                     <span>{{flow.Name}}</span>
                 </li>
+                <cswitch class="switch-medium" style="margin-top:5px;"></cswitch>
             </div>
         </ul>
     </div>

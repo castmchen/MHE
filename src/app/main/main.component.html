@@ -8,51 +8,30 @@
         </a>
     </div>
 
-    <div class="col-sm-8 ">
-        <div class="btn-group navbar-brand" btnRadioGroup [(ngModel)]="navigationValue">
+    <div class="col-sm-8 " style="text-align: right;">
+        <div class="btn-group navbar-brand" style="width:100%" btnRadioGroup [(ngModel)]="navigationValue">
             <label class="btn btn-info" btnRadio="Manage" tabindex="0" role="button">Manage</label>
-            <label class="btn btn-info" btnRadio="Flow" tabindex="0" role="button">Flow</label>
-            <!-- <label class="btn btn-info" btnRadio="Other" tabindex="0" role="button">Other</label> -->
+            <label class="btn btn-info" btnRadio="Flow" tabindex="1" role="button">Flow</label>
+            <label class="btn btn-info" btnRadio="Other" tabindex="3" role="button">Other</label>
         </div>
     </div>
 
-    <div class="col-sm-2 " role="navigation">
-        <!-- <div class="btn-group light-blue" dropdown>
-            <a id="button-basic" href="javascript:void(0)" dropdownToggle class="user-info dropdown-toggle " data-toggle="dropdown" aria-controls="dropdown-basic">
-                <img class="nav-user-photo" src="../../img/user" alt="Jason's Photo" />
-                <span class=" fontColor">
-                                    <small>welcome,</small>
-                                    qiang.c.chen
-                                </span>
-            </a>
-            <ul *dropdownMenu class="dropdown-menu" role="menu">
-                <li role="menuitem"><a class="dropdown-item" href="#"><i class="fa fa-cog"></i> 设置</a></li>
-                <li role="menuitem"><a class="dropdown-item" href="#"><i class="fa fa-user"></i> 个人资料</a></li>
-                <li role="menuitem"><a class="dropdown-item" href="#"><i class="fa fa-off"></i> 退出</a></li>
-                <li class="divider dropdown-divider"></li>
-
-            </ul>
-        </div> -->
-
-        <div class="btn-group navbar-brand" dropdown>
-            <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
-                <span class="fontColor">
-                    qiang.c.chen
-                </span>
-            </button>
-            <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic">
+    <div class="col-sm-2" style="text-align: right;">
+        <div class="btn-group" dropdown placement="bottom right" style="margin-right:20px;">
+            <button id="button-alignment" dropdownToggle type="button" class="profile-img-card" aria-controls="dropdown-alignment"></button>
+            <ul id="dropdown-alignment" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="button-alignment">
+                <li role="menuitem"><a class="dropdown-item" href="#">Action</a></li>
                 <li role="menuitem"><a class="dropdown-item" href="#">Setting</a></li>
-                <li role="menuitem"><a class="dropdown-item" href="#">Details</a></li>
-                <li role="menuitem"><a class="dropdown-item" href="#">Exit</a></li>
+                <li role="menuitem"><a class="dropdown-item" href="#">Person Details</a></li>
                 <li class="divider dropdown-divider"></li>
+                <li role="menuitem"><a class="dropdown-item" href="#">Exit</a></li>
             </ul>
         </div>
-
     </div>
 </div>
 
 
-<app-app-management *ngIf="navigationValue == 'Manage'">
-</app-app-management>
-<app-app-flow *ngIf="navigationValue == 'Flow'">
-</app-app-flow>
+<app-management *ngIf="navigationValue == 'Manage'">
+</app-management>
+<app-flow *ngIf="navigationValue == 'Flow'">
+</app-flow>

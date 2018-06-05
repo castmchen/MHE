@@ -121,29 +121,31 @@ ul li a {
     background-color: #fff;
     position: inherit;
     width: 100%;
+    text-align: left;
 }
 
 .ulSideClose {
-    cursor: "pointer";
+    cursor: pointer;
     border: 1px solid #ccc;
     border-width: 0 0 1px 0;
     background-color: #fff;
     height: 50px!important;
     position: inherit;
-    width: 100%
+    width: 100%;
+    text-align: left;
 }
 
 .ulContainer {
     padding-top: 15px;
     /* padding-bottom: 10px; */
+    padding-left: 30px;
+    height: 40px;
 }
 
 .liSide {
     cursor: pointer!important;
-    /* position: absolute; */
-    text-align: center;
     width: 100%;
-    /* padding-left: 20px; */
+    padding-left: 50px;
     margin-top: 10px;
 }
 
@@ -201,5 +203,8 @@ ul li a {
 
 .ulRight:hover {
     background-color: #6c757d;
-    ;
+}
+
+.drawAdapter {
+    cursor: pointer;
 }

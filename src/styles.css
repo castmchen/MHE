@@ -1,3 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import url("../node_modules/font-awesome/css/font-awesome.min.css");
+.labelClass {
+    background-color: #ccc;
+    padding: 0.4em;
+    font: 16px sans-serif;
+    color: #444;
+    z-index: 21;
+    border: 2px solid #ccc;
+    cursor: pointer;
+}
+
+.profile-img-card {
+    width: 60px;
+    height: 60px;
+    margin: auto;
+    display: block;
+    border-radius: 50%;
+    border: 0.5px solid #17a2b8;
+    z-index: 9999;
+    background-color: #17a2b8;
+    background-image: url("./img/user.png");
+    background-size: 100% 100%;
+    cursor: pointer;
+}

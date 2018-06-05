@@ -5,7 +5,6 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { IfStmt } from '@angular/compiler';
 import { AnonymousSubject } from 'rxjs/internal/Subject';
-import { debug } from 'util';
 import { jsPlumb } from '../../../node_modules/jsplumb/dist/js/jsplumb';
 import * as $ from 'jquery';
 import { Action } from 'rxjs/internal/scheduler/Action';
@@ -17,7 +16,7 @@ import { FlowModel } from '../model/flow-model';
 
 
 @Component({
-  selector: 'app-app-management',
+  selector: 'app-management',
   templateUrl: './app-management.component.html',
   styleUrls: ['./app-management.component.css']
 })
@@ -32,6 +31,7 @@ export class AppManagementComponent implements OnInit {
 
   ngOnInit(){
     this.connectorService.getConnector(p=>{ this.BuildData(p)});
+    this.connectorService.getFlows("qiang.c.chen", p => {this.flows = p});
   }
 
   ngAfterViewInit(){
@@ -40,7 +40,7 @@ export class AppManagementComponent implements OnInit {
 
   ngAfterViewChecked(){
     if(this.redrawFlag){
-      this.jsplumbDraw();
+      this.jsplumbDraw(this.instance);
       this.redrawFlag = false;
     }
   }
@@ -52,7 +52,6 @@ export class AppManagementComponent implements OnInit {
   public newAction: ActionModel;
   public sideTree: ConnectorTree;
   public treeConnector: ConnectorTree;
-  public instance: any;
   public activeTrigger: any;
   public activeActions: Array<any> = new Array<any>();
   public messageInfo: MessageModel = new MessageModel();
@@ -61,6 +60,7 @@ export class AppManagementComponent implements OnInit {
   public currentFlow: FlowModel= new FlowModel();
   public flows: Array<FlowModel> = new Array<FlowModel>();
   public redrawFlag: boolean = false;
+  private instance = jsPlumb.getInstance();
 
   showAdapter(triggerId: any, actionId: any): void {
     this.connectorService.getAdapterProperties(triggerId, actionId, (p)=>{
@@ -142,7 +142,7 @@ export class AppManagementComponent implements OnInit {
     if(connector.TriggerTree){
       connector.TriggerTree.ExpansionFlag = false;
     }
-    if(connector.activeTrigger){
+    if(connector.ActionTree){
       connector.ActionTree.ExpansionFlag = false;
     }
   }
@@ -238,13 +238,14 @@ export class AppManagementComponent implements OnInit {
       this.flows.push(p);
       this.messageInfo.MessageType = MessageEnum.Success;
       this.messageInfo.Message= "Save flow successfully.";
+      this.instance.reset();
       $('#flow-panel').empty();
       this.activeTrigger = null;
       this.activeActions = [];
       this.currentFlow = new FlowModel();
       console.log("The new flow has been saved successfully.");
     });
-    }
+  }
 
     selectFlow(Id: any): void{
       // document.getElementById(Id).style.background = "rgb(226, 226, 226)";
@@ -252,6 +253,7 @@ export class AppManagementComponent implements OnInit {
     }
 
     viewFlow(): void{
+      this.instance.reset(); 
       $('#flow-panel').empty();
       this.currentFlow = this.flows.find(p=>p.Id == this.currentFlow.Id);
       this.drawFlowDetail(this.currentFlow);
@@ -260,24 +262,22 @@ export class AppManagementComponent implements OnInit {
   //#region draw
 
   drawFlowDetail(flowInfo: FlowModel){
-    let instance = jsPlumb.getInstance();
+    var that = this;
+    let instance = that.instance;
     let trigger = flowInfo.Trigger;
     let actions = flowInfo.Actions;
-
     let panel = $('#flow-panel');
     let triggerOffsetX = 10;
-    let triggerOffsetY = panel.height()/2;
-
+    let triggerOffsetY = panel.height()/2 - 30;
     let triggerDom = this.buildNewDocument({X: triggerOffsetX, Y: triggerOffsetY}, trigger.Id + "_1", trigger.ConnectorId, trigger.Name);
     this.buildDragAttribute(instance, triggerDom, "1");
-
-    let actionOffsetX = panel.width()/2;
+    let actionOffsetX = panel.width()/2 - 20;
     
     for(var i = 0; i < actions.length; i++){
      let actionOffsetY = panel.height()/(actions.length + 1)* (i+1);
      let actionDom = this.buildNewDocument({X:actionOffsetX, Y:actionOffsetY}, actions[i].Id + "_2", actions[i].ConnectorId, actions[i].Name);
      this.buildDragAttribute(instance, actionDom, "2");
-     this.buildConnector(instance, triggerDom, actionDom);
+     this.buildConnector(instance, triggerDom, actionDom, that);
     }     
   }
 
@@ -285,10 +285,10 @@ export class AppManagementComponent implements OnInit {
 
   //#region draw
 
-  jsplumbDraw(){
+  jsplumbDraw(instance: any){
     let that = this;
     let location = null;
-    let instance = jsPlumb.getInstance();
+    
     buildListener($(".liSide"));
 
     function buildListener(nodes){
@@ -326,7 +326,7 @@ export class AppManagementComponent implements OnInit {
           console.log("move failed");
         }
       });
-      jsPlumb.fire("jsFlowLoaded", instance);
+      // jsPlumb.fire("jsFlowLoaded", instance);
     }
   }
   
@@ -336,10 +336,15 @@ export class AppManagementComponent implements OnInit {
 //#region draw
 
  buildNewDocument(location, noodId, rootId, value){
-  let newDoc = "<div id=" + noodId + " connector=" + rootId + "></div>";
-  $("#flow-panel").append(newDoc);
-  $("#"+ noodId).css({'width':'120', 'height':'80', 'position':'absolute','top':location.Y, 'left':location.X, 'border': '2px #ccc solid', 'cursor' : 'pointer'}).attr('align','center').text(value);
-  return $('#'+ noodId)[0];
+  var newElement = document.createElement('div');
+  newElement.id = noodId;
+  newElement.innerHTML = value;
+  newElement.setAttribute('connector', rootId);
+  newElement.setAttribute('style', "position: absolute; top:" + location.Y + ";left:" + location.X + ";width: 120px; height: 80px;border: 2px #ccc solid;cursor:pointer");
+  newElement.setAttribute('align', 'center');
+  
+  document.getElementById('flow-panel').appendChild(newElement);
+  return newElement;
 }
 
  buildDragAttribute(instance, doc, type){
@@ -367,9 +372,9 @@ export class AppManagementComponent implements OnInit {
                  maxConnections: -1,  
                  HoverPaintStyle : {stroke:"#ccc" },
                  EndpointHoverStyle : {stroke:"#ccc" },
-                 connectorStyle:{ stroke:"#ccc", strokeWidth:3 },
+                 connectorStyle:{ stroke:"#ccc", strokeWidth:2 },
                  connectorOverlays: [["Arrow", { width: 10, length: 10, location: 1 }],
-                 ["Label", {label:"Adapter", location:0.5, id:"myLabel", events: {
+                 ["Label", {label:"Adapter", location:0.5, id:"myLabel", cssClass:"labelClass", events: {
                   "click": function(info, event){
                       let triggerId = info.component.sourceId.substring(0, info.component.sourceId.lastIndexOf("_"));
                       let actionId = info.component.targetId.substring(0, info.component.targetId.lastIndexOf("_"));
@@ -431,8 +436,26 @@ export class AppManagementComponent implements OnInit {
   instance.draggable(doc.id, {containment: "flow-panel"});
 }
 
- buildConnector(instance, fromDom, toDom){
-  instance.connect({source: fromDom.id, target: toDom.id});
+ buildConnector(instance, fromDom, toDom, that){
+  instance.connect({
+    source: fromDom, 
+    target: toDom, 
+    paintStyle: { stroke: "#ccc", fill: "#ccc", strokeWidth: 2}, 
+    connector: ["Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
+    maxConnections: 1,
+    endpointStyle:{ radius:8, fillStyle: "#ccc", fill: "transparent" },
+    HoverPaintStyle : {stroke:"#ccc" },
+    EndpointHoverStyle : {stroke:"#ccc" },
+    connectorStyle:{ stroke:"#ccc", strokeWidth:3 },
+    overlays: [["Arrow", { width: 10, length: 10, location: 1 }],
+    ["Label", { label:"Adapter", location:0.5, id:"myLabel", cssClass: "labelClass", events: {
+     "click": function(info, event){
+         let triggerId = info.component.sourceId.substring(0, info.component.sourceId.lastIndexOf("_"));
+         let actionId = info.component.targetId.substring(0, info.component.targetId.lastIndexOf("_"));
+         that.showAdapter(triggerId, actionId);
+     }
+   }}]]
+  });
 }
 
 //#endregion
