@@ -106,8 +106,10 @@ export class flowDomain{
     flowDescription: string;
     triggerId: any;
     triggerName: string;
+    triggerConnectorId: any;
     actionId: any;
     actionName: string;
+    actionConnectorId: any;
     createdBy: string;
     createdDateTime: string;
     updatedBy: string;

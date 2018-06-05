@@ -16,7 +16,7 @@ const UI_SWITCH_CONTROL_VALUE_ACCESSOR: any = {
   [class.switch-large]="size === 'large'"
   [class.switch-medium]="size === 'medium'"
   [class.switch-small]="size === 'small'"
-  [style.background-color]="getColor()"
+  [style.background-color]="getColor('')"
   [style.border-color]="getColor('borderColor')"
   >
   <p class="pstyle">ON OFF</p>
@@ -62,7 +62,7 @@ const UI_SWITCH_CONTROL_VALUE_ACCESSOR: any = {
     }
 
     .switch-medium {
-    width: 40px;
+    width: 45px;
     height: 23px;
     border-radius: 30px;
     }
@@ -93,7 +93,7 @@ const UI_SWITCH_CONTROL_VALUE_ACCESSOR: any = {
     }
 
     .switch-medium.checked small {
-    left: 20px;
+    left: 23px;
     }
 
     .switch-small.checked small {

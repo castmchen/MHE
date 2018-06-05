@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { ConnectorModel, TriggerModel, ActionModel, Propertry } from '../model/connector-model';
+import { ConnectorModel, TriggerModel, ActionModel, Propertry, AdapterModel } from '../model/connector-model';
 import { ConnectorService } from '../service/Connector/connector-service.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -24,19 +24,20 @@ export class AppManagementComponent implements OnInit {
   @ViewChild('adapter') adapter: ModalDirective;
   constructor(private connectorService: ConnectorService, private modalService: BsModalService) { }
   modalRef: BsModalRef;
-  config = {
+  public config: any = {
     backdrop: true,
     ignoreBackdropClick: true
-  };
+  }
 
   ngOnInit(){
+    this.instance = jsPlumb.getInstance();
     this.connectorService.getConnector(p=>{ this.BuildData(p)});
     this.connectorService.getFlows("qiang.c.chen", p => {this.flows = p});
   }
 
   ngAfterViewInit(){
     
-  };
+  }
 
   ngAfterViewChecked(){
     if(this.redrawFlag){
@@ -55,17 +56,15 @@ export class AppManagementComponent implements OnInit {
   public activeTrigger: any;
   public activeActions: Array<any> = new Array<any>();
   public messageInfo: MessageModel = new MessageModel();
-  public actionProperties: Array<Propertry>;
-  public triggerProperties: Array<Propertry>;
+  public adapterInfo: AdapterModel;
   public currentFlow: FlowModel= new FlowModel();
   public flows: Array<FlowModel> = new Array<FlowModel>();
   public redrawFlag: boolean = false;
-  private instance = jsPlumb.getInstance();
+  private instance: any;
 
   showAdapter(triggerId: any, actionId: any): void {
     this.connectorService.getAdapterProperties(triggerId, actionId, (p)=>{
-      this.triggerProperties = p.Trigger;
-      this.actionProperties = p.Action;
+      this.adapterInfo = p != null ? p : new AdapterModel();
       this.adapter.config = this.config;
       this.adapter.show();
     });
@@ -248,7 +247,6 @@ export class AppManagementComponent implements OnInit {
   }
 
     selectFlow(Id: any): void{
-      // document.getElementById(Id).style.background = "rgb(226, 226, 226)";
       this.currentFlow.Id = Id;
     }
 
@@ -262,19 +260,20 @@ export class AppManagementComponent implements OnInit {
   //#region draw
 
   drawFlowDetail(flowInfo: FlowModel){
+    debugger;
     var that = this;
     let instance = that.instance;
     let trigger = flowInfo.Trigger;
     let actions = flowInfo.Actions;
     let panel = $('#flow-panel');
-    let triggerOffsetX = 10;
-    let triggerOffsetY = panel.height()/2 - 30;
+    let triggerOffsetX = "250px";
+    let triggerOffsetY = panel.height()/2 - 40 + "px";
     let triggerDom = this.buildNewDocument({X: triggerOffsetX, Y: triggerOffsetY}, trigger.Id + "_1", trigger.ConnectorId, trigger.Name);
     this.buildDragAttribute(instance, triggerDom, "1");
-    let actionOffsetX = panel.width()/2 - 20;
+    let actionOffsetX = panel.width()/2 + 120 + "px";
     
     for(var i = 0; i < actions.length; i++){
-     let actionOffsetY = panel.height()/(actions.length + 1)* (i+1);
+     let actionOffsetY = panel.height()/(actions.length + 1) * (i + 1) - 40 + "px";
      let actionDom = this.buildNewDocument({X:actionOffsetX, Y:actionOffsetY}, actions[i].Id + "_2", actions[i].ConnectorId, actions[i].Name);
      this.buildDragAttribute(instance, actionDom, "2");
      this.buildConnector(instance, triggerDom, actionDom, that);
@@ -326,7 +325,7 @@ export class AppManagementComponent implements OnInit {
           console.log("move failed");
         }
       });
-      // jsPlumb.fire("jsFlowLoaded", instance);
+      jsPlumb.fire("jsFlowLoaded", instance);
     }
   }
   
@@ -340,10 +339,15 @@ export class AppManagementComponent implements OnInit {
   newElement.id = noodId;
   newElement.innerHTML = value;
   newElement.setAttribute('connector', rootId);
-  newElement.setAttribute('style', "position: absolute; top:" + location.Y + ";left:" + location.X + ";width: 120px; height: 80px;border: 2px #ccc solid;cursor:pointer");
-  newElement.setAttribute('align', 'center');
+  if(noodId.substring(noodId.lastIndexOf('_')+1, noodId.length) == '1'){
+    newElement.setAttribute('style', "position: absolute; top:" + location.Y + ";left:" + location.X + ";width: 120px; height: 80px;border: 1px #009966 solid; cursor:pointer; color: white; background: #009966");
+  }else{
+    newElement.setAttribute('style', "position: absolute; top:" + location.Y + ";left:" + location.X + ";width: 120px; height: 80px;border: 1px #0099CC solid; cursor:pointer; color: white; background: #0099CC");
+  }
   
+  newElement.setAttribute('align', 'center');
   document.getElementById('flow-panel').appendChild(newElement);
+  
   return newElement;
 }
 
@@ -366,13 +370,13 @@ export class AppManagementComponent implements OnInit {
           };
     var formStyle = {
                  isSource: true,   
-                 endpoint: ["Dot", { radius: 8 }], 
-                 paintStyle: { stroke: "#ccc", fill: "#ccc", strokeWidth: 2},
+                 endpoint: ["Dot", { radius: 6 }], 
+                 paintStyle: { stroke: "#FF9933", fill: "#FF9933", strokeWidth: 1},
                  connector: ["Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
                  maxConnections: -1,  
-                 HoverPaintStyle : {stroke:"#ccc" },
-                 EndpointHoverStyle : {stroke:"#ccc" },
-                 connectorStyle:{ stroke:"#ccc", strokeWidth:2 },
+                 HoverPaintStyle : {stroke:"#CCCC00" },
+                 EndpointHoverStyle : {stroke:"#CCCC00" },
+                 connectorStyle:{ stroke:"#CCCC00", strokeWidth:3 },
                  connectorOverlays: [["Arrow", { width: 10, length: 10, location: 1 }],
                  ["Label", {label:"Adapter", location:0.5, id:"myLabel", cssClass:"labelClass", events: {
                   "click": function(info, event){
@@ -386,8 +390,8 @@ export class AppManagementComponent implements OnInit {
   }else if(type == "2"){
     var toStyle = {
       isTarget: true,   
-      endpoint: ["Dot", { radius: 8 }], 
-      paintStyle: { stroke: "#ccc", fill: "transparent", strokeWidth: 2},
+      endpoint: ["Dot", { radius: 6 }], 
+      paintStyle: { stroke: "#FF9933", fill: "#FF9933", strokeWidth: 2},
       connector: ["Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
       maxConnections: -1,  
       HoverPaintStyle : {stroke:"#7073EB" },
@@ -440,13 +444,13 @@ export class AppManagementComponent implements OnInit {
   instance.connect({
     source: fromDom, 
     target: toDom, 
-    paintStyle: { stroke: "#ccc", fill: "#ccc", strokeWidth: 2}, 
+    paintStyle: { stroke: "#CCCC00", fill: "#CCCC00", strokeWidth: 3}, 
     connector: ["Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
     maxConnections: 1,
-    endpointStyle:{ radius:8, fillStyle: "#ccc", fill: "transparent" },
-    HoverPaintStyle : {stroke:"#ccc" },
-    EndpointHoverStyle : {stroke:"#ccc" },
-    connectorStyle:{ stroke:"#ccc", strokeWidth:3 },
+    endpointStyle:{ radius:6, fillStyle: "#CCCC00", fill: "transparent" },
+    HoverPaintStyle : {stroke:"#CCCC00" },
+    EndpointHoverStyle : {stroke:"#CCCC00" },
+    connectorStyle:{ stroke:"#CCCC00", strokeWidth:3 },
     overlays: [["Arrow", { width: 10, length: 10, location: 1 }],
     ["Label", { label:"Adapter", location:0.5, id:"myLabel", cssClass: "labelClass", events: {
      "click": function(info, event){

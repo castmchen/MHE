@@ -2,13 +2,13 @@
 
 @import url("../node_modules/font-awesome/css/font-awesome.min.css");
 .labelClass {
-    background-color: #ccc;
     padding: 0.4em;
     font: 16px sans-serif;
-    color: #444;
-    z-index: 21;
-    border: 2px solid #ccc;
+    color: white;
+    z-index: 100;
+    border: 1px solid #FF9933;
     cursor: pointer;
+    background: #FF9933;
 }
 
 .profile-img-card {

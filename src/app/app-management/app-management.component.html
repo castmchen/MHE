@@ -86,7 +86,7 @@
         </div>
         <ul class="list-group">
             <div *ngFor="let flow of flows" id="{{flow.Id}}" class="ulRight" (click)="selectFlow(flow.Id)">
-                <li class="liRight" style="width:135px;">
+                <li class="liRight" style="width: 65%;">
                     <span>{{flow.Name}}</span>
                 </li>
                 <cswitch class="switch-medium" style="margin-top:5px;"></cswitch>
@@ -212,7 +212,7 @@
 </div>
 
 <!-- adapter popup -->
-<div bsModal #adapter="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-child-name">
+<div *ngIf="adapterInfo" bsModal #adapter="bs-modal" class="modal fade" role="dialog" aria-labelledby="dialog-child-name">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -224,15 +224,15 @@
             <!--Property List-->
             <div style="width: 100%; margin-left: 10px; margin-top: 10px">
                 <div style="float: left;width: 50%">
-                    <p>Action:{{ actionName }}</p>
-                    <p class="col-sm-9 form-control" *ngFor="let a of actionProperties">{{ a.Name }} </p>
+                    <p>Action:{{ adapterInfo.ActionName }}</p>
+                    <p class="col-sm-9 form-control" *ngFor="let action of adapterInfo.Action">{{ action.Name }} </p>
                 </div>
                 <div style="float: left;width: 50%">
-                    <p>Trigger:{{ triggerName }}</p>
-                    <div *ngFor="let a of actionProperties">
-                        <select style="margin-top:16px;" class="col-sm-9 form-control" [(ngModel)]="a.trigger">  
+                    <p>Trigger:{{ adapterInfo.TriggerName }}</p>
+                    <div *ngFor="let action of adapterInfo.Action">
+                        <select style="margin-top:16px;" class="col-sm-9 form-control" [(ngModel)]="action.trigger">  
                             <option [ngValue]=""></option>
-                            <option class="col-md-1" *ngFor="let t of triggerProperties" [value]="t.Name">{{t.Name}}    
+                            <option class="col-md-1" *ngFor="let trigger of adapterInfo.Trigger" [value]="trigger.Name">{{ trigger.Name }}    
                             </option>  
                         </select>
                     </div>

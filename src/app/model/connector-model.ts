@@ -34,10 +34,8 @@ export class AdapterModel{
         this.Trigger = new Array<Propertry>();
         this.Action = new Array<Propertry>();
     }
+    public TriggerName: string;
     public Trigger: Array<Propertry>;
+    public ActionName: string;
     public Action: Array<Propertry>;
-}
-
-export class Connection{
-    
 }

@@ -21,9 +21,9 @@ export class LoginComponent implements OnInit {
   }
 
   
-  private loginFlag : boolean = true;
-  private registerFlag : boolean = false;
-  private forgetFlag : boolean = false;
+  public loginFlag : boolean = true;
+  public registerFlag : boolean = false;
+  public forgetFlag : boolean = false;
   
   public UserInfo: UserModel = new UserModel();
   @Output() loginEvent = new EventEmitter<UserModel>();
