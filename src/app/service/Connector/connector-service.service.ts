@@ -155,7 +155,7 @@ export class ConnectorService {
 
       connectors[i].triggers.forEach(trigger => {
         let triggerModel = new TriggerModel();
-        triggerModel.Id = trigger.connectorId;
+        triggerModel.Id = trigger.triggerId;
         triggerModel.Name = trigger.triggerName;
         triggerModel.Discription = trigger.destription;
         triggerModel.ConnectorId = trigger.connectorId;
