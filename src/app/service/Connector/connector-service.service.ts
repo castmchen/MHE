@@ -220,10 +220,10 @@ export class ConnectorService {
   }
 
   ConvertFlowDomainToModel(flowDomain: any, flowModel: FlowModel): FlowModel{
-    flowModel.Trigger.Name = flowDomain.trigger.triggerName;
+    flowModel.Trigger.Name = flowDomain.triggerDetail.triggerName;
     flowModel.Id = flowDomain.flowId;
     flowModel.Actions.forEach(p=>{
-       var tempFlow = flowDomain.actions.find(pro=>pro.actionId == p.Id && pro.connectorId == p.ConnectorId);
+       var tempFlow = flowDomain.actionDetails.find(pro=>pro.actionId == p.Id && pro.connectorId == p.ConnectorId);
        if(tempFlow != null && tempFlow != undefined){
           p.Name = tempFlow.actionName;
        }
@@ -268,7 +268,8 @@ export class ConnectorService {
     this.httpService.HttpGet<Array<flowDomain>>(this.getFlowUrl + eid).subscribe( p=> {
       let flowModels: Array<FlowModel> = new Array<FlowModel>();
       for(var i in p){
-        let tempFlow: FlowModel = flowModels.find(p=>p.Id == p[i].flowID);
+        let flowId = p[i].flowID;
+        let tempFlow: FlowModel = flowModels.find(p=>p.Id == flowId);
         if(tempFlow != null && tempFlow != undefined){
           tempFlow.Actions.push({Id: p[i].actionId, Name: p[i].actionName} as ActionModel);
         }else{
