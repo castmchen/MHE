@@ -86,7 +86,7 @@
         </div>
         <ul class="list-group">
             <div *ngFor="let flow of flows" id="{{flow.Id}}" class="ulRight" (click)="selectFlow(flow.Id)">
-                <li class="liRight" style="width: 60%;">
+                <li class="liRight" style="width: 60%; padding-top: 5px;">
                     <span>{{flow.Name}}</span>
                 </li>
                 <cswitch class="switch-medium" style="margin-top:5px;"></cswitch>
