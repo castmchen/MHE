@@ -58,6 +58,7 @@ export class AppManagementComponent implements OnInit {
   public messageInfo: MessageModel = new MessageModel();
   public adapterInfo: AdapterModel;
   public currentFlow: FlowModel= new FlowModel();
+  public currentFlowId: any;
   public flows: Array<FlowModel> = new Array<FlowModel>();
   public redrawFlag: boolean = false;
   private instance: any;
@@ -246,21 +247,22 @@ export class AppManagementComponent implements OnInit {
     });
   }
 
-    selectFlow(Id: any): void{
-      this.currentFlow.Id = Id;
+    selectFlow(flowId: any): void{
+      this.currentFlowId = flowId;
     }
 
     viewFlow(): void{
-      this.instance.reset(); 
-      $('#flow-panel').empty();
-      this.currentFlow = this.flows.find(p=>p.Id == this.currentFlow.Id);
-      this.drawFlowDetail(this.currentFlow);
+      if(this.currentFlowId != null && this.currentFlowId != undefined){
+        this.instance.reset(); 
+        $('#flow-panel').empty();
+        this.currentFlow = this.flows.find(p=>p.Id == this.currentFlowId);
+        this.drawFlowDetail(this.currentFlow);
+      }
     }
 
   //#region draw
 
   drawFlowDetail(flowInfo: FlowModel){
-    debugger;
     var that = this;
     let instance = that.instance;
     let trigger = flowInfo.Trigger;
