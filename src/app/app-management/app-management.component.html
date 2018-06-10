@@ -49,7 +49,7 @@
 </div>
 
 
-<div class="col-md-8">
+<div class="col-md-7">
     <div class="row" style="margin-left: auto;">
         <alert *ngIf="messageInfo.MessageType == null" type="success" class="col-md-12">
             <strong>Tip: </strong> please create the new flow relationship, the flow include only one trigger and one more than action.
@@ -79,17 +79,21 @@
     </div>
 
 </div>
-<div class="col-md-2">
+<div class="col-md-3">
     <div class="siderightbar">
-        <div style="width:100%; height:50px; background:white">
+        <!-- <div style="width:100%; height:50px; background:white">
             <button type="button" style="width:100%; height:50px;" class="btn btn-outline-secondary" (click)="viewFlow()">View Flow</button>
-        </div>
-        <ul class="list-group">
-            <div *ngFor="let flow of flows" id="{{flow.Id}}" class="ulRight" (click)="selectFlow(flow.Id)">
-                <li class="liRight" style="width: 60%; padding-top: 5px;">
-                    <span>{{flow.Name}}</span>
+        </div> -->
+        <ul id="ulRight" class="list-group">
+            <li class="liRight" style="height:40px; background: white;border: 1px rgba(0, 0, 0, .125); border-bottom-style: solid;">
+                <span class="TitleName">Name</span>
+                <span style="padding-left:10px;">Status</span>
+            </li>
+            <div *ngFor="let flow of flows" id="{{flow.Id}}" class="ulRight" (click)="viewFlow(flow.Id)">
+                <li class="liRight" style="width: 215px; padding-top: 5px;">
+                    <span style="width:60px">{{flow.Name}}</span>
                 </li>
-                <cswitch class="switch-medium" style="margin-top:5px;"></cswitch>
+                <cswitch class="switch-medium" style=" margin-top:5px;"></cswitch>
             </div>
         </ul>
     </div>
@@ -212,7 +216,7 @@
 </div>
 
 <!-- adapter popup -->
-<div *ngIf="adapterInfo" bsModal #adapter="bs-modal" class="modal fade" role="dialog" aria-labelledby="dialog-child-name">
+<div bsModal #adapter="bs-modal" class="modal fade" role="dialog" aria-labelledby="dialog-child-name">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
