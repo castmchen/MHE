@@ -52,7 +52,7 @@
 <div class="col-md-7">
     <div class="row" style="margin-left: auto;">
         <alert *ngIf="messageInfo.MessageType == null" type="success" class="col-md-12">
-            <strong>Tip: </strong> please create the new flow relationship, the flow include only one trigger and one more than action.
+            <strong>Tip: </strong> You can create flow by tragging trigger and action from the left pannel, only one trigger can be dragged for one flow.
         </alert>
         <alert *ngIf="messageInfo?.MessageType == 3" type="success" class="col-md-12">
             <strong>Success: </strong> {{messageInfo.Message}}
@@ -68,10 +68,10 @@
         </alert>
     </div>
     <div class="row input-group mb-3" style="margin-left:auto;">
-        <input type="text" class="form-control" [(ngModel)]="currentFlow.Name" placeholder="Flow's name" aria-label="Flow's name" aria-describedby="basic-addon2">
-        <input type="text" class="form-control" [(ngModel)]="currentFlow.Description" placeholder="Flow's description" aria-label="Flow's description" aria-describedby="basic-addon2">
+        <input type="text" class="form-control" [(ngModel)]="currentFlow.Name" placeholder="Flow name" aria-label="Flow's name" aria-describedby="basic-addon2">
+        <input type="text" class="form-control" [(ngModel)]="currentFlow.Description" placeholder="Flow description" aria-label="Flow's description" aria-describedby="basic-addon2">
         <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" (click)="saveFlow()">Save Flow</button>
+            <button class="btn btn-outline-secondary" type="button" (click)="saveFlow()">Save</button>
         </div>
     </div>
 
@@ -252,6 +252,31 @@
                         Save Adapter
                     </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- confirm popup -->
+<div bsModal #confirmPopup="bs-modal" class="modal fade" role="dialog" aria-labelledby="dialog-child-name">
+    <div class="modal-dialog">
+        <div class="modal-content">
+                <div class="modal-header">
+                    <h4>Warning!</h4>
+                </div>
+                <div style="margin: 10px 10px 10px 10px">
+                <p >You have unsaved flow. Would you like to cancel view and go on modify the flow or continue to view flow. If you continue to view flow, the unsaved flow will not be saved.</p>
+                <hr/>
+            </div>
+            <div style="margin-bottom: 15px;">
+                
+                <button type="button " style="float: right; margin-right: 15px; " class="btn btn-primary " (click)="hideConfirm()">
+                    Cancel
+            </button>
+            <button type="button " style="float: right; margin-right: 15px;" class="btn btn-primary " (click)="GoonView()">
+                    Continue
+            </button>
+            <div id="hiddenId" style="display: none"></div>
+        </div>
         </div>
     </div>
 </div>

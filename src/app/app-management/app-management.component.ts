@@ -22,6 +22,7 @@ import { FlowModel } from '../model/flow-model';
 })
 export class AppManagementComponent implements OnInit {
   @ViewChild('adapter') adapter: ModalDirective;
+  @ViewChild('confirmPopup') confirmPopup: ModalDirective;
   constructor(private connectorService: ConnectorService, private modalService: BsModalService) { }
   modalRef: BsModalRef;
   public config: any = {
@@ -212,13 +213,13 @@ export class AppManagementComponent implements OnInit {
   saveFlow(): void{
     if(this.activeTrigger == null || this.activeActions.length == 0){
       this.messageInfo.MessageType = MessageEnum.Error;
-      this.messageInfo.Message = "please assign a flow, trigger and action can't be null.";
+      this.messageInfo.Message = "Please create correct flow. Trigger, Action or Flow should not be null.";
       return;
     }
 
     if(this.currentFlow.Name == '' || this.currentFlow.Name == undefined){
       this.messageInfo.MessageType = MessageEnum.Error;
-      this.messageInfo.Message = "please input a valid flow name, then try save again.";
+      this.messageInfo.Message = "Please fill a valid flow name and try again.";
       return;
     }
 
@@ -263,6 +264,13 @@ export class AppManagementComponent implements OnInit {
     })();
 
     viewFlow(flowId: any): void{
+      if( this.activeTrigger  || this.activeActions.length >0){
+        $('#hiddenId').text = flowId;
+        this.ShowConfirm();
+        console.log("no save");
+        return;
+      }
+
       // let currentFlowId: any = this.cacheFlowID.getId();
       if(flowId != null && flowId != undefined){
         this.instance.reset(); 
@@ -274,6 +282,24 @@ export class AppManagementComponent implements OnInit {
         $('#' + flowId).addClass('selected');
       }
     }
+
+ShowConfirm():void{
+    this.confirmPopup.show();
+}
+    
+GoonView():void{
+  this.instance.reset();
+  $('#flow-panel').empty();
+  this.activeTrigger = null;
+  this.activeActions = [];
+  this.currentFlow = new FlowModel();
+  this.confirmPopup.hide();
+  this.viewFlow($('#hiddenId').text);
+}
+
+hideConfirm():void{
+  this.confirmPopup.hide();
+}
 
   //#region draw
 
@@ -520,4 +546,6 @@ export class MessageModel{
   public MessageType: MessageEnum;
   public Message: string;
 };
+
+
 

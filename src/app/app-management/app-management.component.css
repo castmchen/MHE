@@ -227,3 +227,7 @@ ul li a {
 .selected {
     background-color: darkslategray;
 }
+
+::-webkit-input-placeholder{
+    font-style: italic
+}
