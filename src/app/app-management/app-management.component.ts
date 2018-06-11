@@ -148,11 +148,16 @@ export class AppManagementComponent implements OnInit {
   }
 
   showHideTrigger(triggerTree): void{
-    triggerTree.ExpansionFlag = !triggerTree.ExpansionFlag;
+    if(triggerTree.TriggerChild.length >0){
+      triggerTree.ExpansionFlag = !triggerTree.ExpansionFlag;
+    }    
   }
 
   showHideAction(actionTree): void{
-    actionTree.ExpansionFlag = !actionTree.ExpansionFlag;
+    if(actionTree.ActionChild.length >0){
+      actionTree.ExpansionFlag = !actionTree.ExpansionFlag;
+    }
+    
   }
 
   searchByKeyword(): void{

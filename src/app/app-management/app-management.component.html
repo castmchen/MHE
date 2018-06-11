@@ -3,7 +3,8 @@
         <div class="sidebar">
             <!-- <button type="button" class="btn btn-success btn-sm sideContainer" (click)="addnewConnector(newConnectorTemplate)"> Add New Container </button> -->
             <div style="height:50px; display: inline-flex; width: 100%">
-                <input type="text" id="keyword" class="form-control" style="height:100%" data-toggle="tooltip" data-placement="bottom" title="Tooltip on top" placeholder="Keywords">
+                <input type="text" id="keyword" class="form-control" style="height:100%" data-toggle="tooltip" data-placement="bottom" title="Tooltip on top"
+                    placeholder="keywords">
                 <div style="background:white">
                     <button type="button" style="height:100%" class="btn btn-outline-secondary" (click)="searchByKeyword()">Search</button>
                 </div>
@@ -15,7 +16,8 @@
                         <i *ngIf="!connectorNode.ExpansionFlag" class="fa fa-plus"></i> {{connectorNode.ConnectorName}}
                     </div>
                     <div [ngClass]="{ 'liShow': connectorNode.ExpansionFlag, 'liHide': !connectorNode.ExpansionFlag}" style="padding-left:30px;">
-                        <div *ngIf='connectorNode.TriggerTree' [ngClass]="{'middleLi': connectorNode.ExpansionFlag && !connectorNode.TriggerTree.ExpansionFlag }" (click)="showHideTrigger(connectorNode.TriggerTree)">
+                        <div *ngIf='connectorNode.TriggerTree' [ngClass]="{'middleLi': connectorNode.ExpansionFlag && !connectorNode.TriggerTree.ExpansionFlag && !connectorNode.TriggerTree.TriggerChild.length==0, 'disableLi': connectorNode.TriggerTree.TriggerChild.length ==0 }"
+                            (click)="showHideTrigger(connectorNode.TriggerTree)">
                             <span style="margin-left:20px;">
                                 <i *ngIf="connectorNode.TriggerTree.ExpansionFlag" class="fa fa-minus"></i>
                                 <i *ngIf="!connectorNode.TriggerTree.ExpansionFlag" class="fa fa-plus"></i>
@@ -23,91 +25,94 @@
                                 <div [ngClass]="{ 'liShow': connectorNode.ExpansionFlag && connectorNode.TriggerTree.ExpansionFlag, 'liHide': !connectorNode.TriggerTree.ExpansionFlag} ">
                                     <div *ngFor="let trigger of connectorNode.TriggerTree.TriggerChild" id="{{trigger.TriggerChildId}}" elementflag="1" class="liSide">
                                         <span> {{trigger.TriggerChildName}} </span>
-                            <input type="hidden" value="{{connectorNode.ConnectorId}}">
+                                        <input type="hidden" value="{{connectorNode.ConnectorId}}">
+                                    </div>
+                                </div>
+                            </span>
+                        </div>
+
+                        <div *ngIf='connectorNode.ActionTree' [ngClass]="{'middleLi': connectorNode.ExpansionFlag && !connectorNode.ActionTree.ExpansionFlag && !connectorNode.ActionTree.ActionChild.length==0, 'disableLi': connectorNode.ActionTree.ActionChild.length ==0}"
+                            (click)="showHideAction(connectorNode.ActionTree)">
+                            <span style="margin-left:20px;">
+                                <i *ngIf="connectorNode.ActionTree.ExpansionFlag" class="fa fa-minus"></i>
+                                <i *ngIf="!connectorNode.ActionTree.ExpansionFlag" class="fa fa-plus"></i>
+                                {{connectorNode.ActionTree.ActionNodeName}}
+                                <div [ngClass]="{ 'liShow':connectorNode.ExpansionFlag && connectorNode.ActionTree.ExpansionFlag, 'liHide': !connectorNode.ActionTree.ExpansionFlag} ">
+                                    <div *ngFor="let action of connectorNode.ActionTree.ActionChild" id="{{action.ActionChildId}}" elementflag="2" class="liSide">
+                                        <span>{{action.ActionChildName}}</span>
+                                        <input type="hidden" value="{{connectorNode.ConnectorId}}">
+                                    </div>
+                                </div>
+                            </span>
                         </div>
                     </div>
-                    </span>
-                </div>
-
-                <div *ngIf='connectorNode.ActionTree' [ngClass]="{'middleLi': connectorNode.ExpansionFlag && !connectorNode.ActionTree.ExpansionFlag }" (click)="showHideAction(connectorNode.ActionTree)">
-                    <span style="margin-left:20px;">
-                                    <i *ngIf="connectorNode.ActionTree.ExpansionFlag" class="fa fa-minus"></i>
-                                    <i *ngIf="!connectorNode.ActionTree.ExpansionFlag" class="fa fa-plus"></i>
-                                    {{connectorNode.ActionTree.ActionNodeName}}
-                                    <div [ngClass]="{ 'liShow':connectorNode.ExpansionFlag && connectorNode.ActionTree.ExpansionFlag, 'liHide': !connectorNode.ActionTree.ExpansionFlag} ">
-                                        <div *ngFor="let action of connectorNode.ActionTree.ActionChild" id="{{action.ActionChildId}}" elementflag="2" class="liSide">
-                                            <span>{{action.ActionChildName}}</span>
-                    <input type="hidden" value="{{connectorNode.ConnectorId}}">
                 </div>
             </div>
-            </span>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-</div>
-
-
-<div class="col-md-7">
-    <div class="row" style="margin-left: auto;">
-        <alert *ngIf="messageInfo.MessageType == null" type="success" class="col-md-12">
-            <strong>Tip: </strong> You can create flow by tragging trigger and action from the left pannel, only one trigger can be dragged for one flow.
-        </alert>
-        <alert *ngIf="messageInfo?.MessageType == 3" type="success" class="col-md-12">
-            <strong>Success: </strong> {{messageInfo.Message}}
-        </alert>
-        <alert *ngIf="messageInfo?.MessageType == 0" type="info" class="col-md-12">
-            <strong>Info: </strong> {{messageInfo.Message}}
-        </alert>
-        <alert *ngIf="messageInfo?.MessageType == 1" type="warning" class="col-md-12">
-            <strong>Warning: </strong> {{messageInfo.Message}}
-        </alert>
-        <alert *ngIf="messageInfo?.MessageType == 2" type="danger" class="col-md-12">
-            <strong>Error: </strong> {{messageInfo.Message}}
-        </alert>
-    </div>
-    <div class="row input-group mb-3" style="margin-left:auto;">
-        <input type="text" class="form-control" [(ngModel)]="currentFlow.Name" placeholder="Flow name" aria-label="Flow's name" aria-describedby="basic-addon2">
-        <input type="text" class="form-control" [(ngModel)]="currentFlow.Description" placeholder="Flow description" aria-label="Flow's description" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" (click)="saveFlow()">Save</button>
         </div>
     </div>
 
-    <div id="flow-panel" class='col-md-12 flowPanel'>
-    </div>
 
-</div>
-<div class="col-md-3">
-    <div class="siderightbar">
-        <!-- <div style="width:100%; height:50px; background:white">
+    <div class="col-md-7">
+        <div class="row" style="margin-left: auto;">
+            <alert *ngIf="messageInfo.MessageType == null" type="success" class="col-md-12">
+                <strong>Tip: </strong> You can create flow by tragging trigger and action from the left pannel.
+            </alert>
+            <alert *ngIf="messageInfo?.MessageType == 3" type="success" class="col-md-12">
+                <strong>Success: </strong> {{messageInfo.Message}}
+            </alert>
+            <alert *ngIf="messageInfo?.MessageType == 0" type="info" class="col-md-12">
+                <strong>Info: </strong> {{messageInfo.Message}}
+            </alert>
+            <alert *ngIf="messageInfo?.MessageType == 1" type="warning" class="col-md-12">
+                <strong>Warning: </strong> {{messageInfo.Message}}
+            </alert>
+            <alert *ngIf="messageInfo?.MessageType == 2" type="danger" class="col-md-12">
+                <strong>Error: </strong> {{messageInfo.Message}}
+            </alert>
+        </div>
+        <div class="row input-group mb-3" style="margin-left:auto;">
+            <input type="text" class="form-control" [(ngModel)]="currentFlow.Name" placeholder="flow name" aria-label="Flow's name" aria-describedby="basic-addon2">
+            <input type="text" class="form-control" [(ngModel)]="currentFlow.Description" placeholder="flow description" aria-label="Flow's description"
+                aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" (click)="saveFlow()">Save</button>
+            </div>
+        </div>
+
+        <div id="flow-panel" class='col-md-12 flowPanel'>
+        </div>
+
+    </div>
+    <div class="col-md-3">
+        <div class="siderightbar">
+            <!-- <div style="width:100%; height:50px; background:white">
             <button type="button" style="width:100%; height:50px;" class="btn btn-outline-secondary" (click)="viewFlow()">View Flow</button>
         </div> -->
-        <ul id="ulRight" class="list-group">
-            <li class="liRight" style="height:40px; background: white;border: 1px rgba(0, 0, 0, .125); border-bottom-style: solid;">
-                <span class="TitleName">Name</span>
-                <span style="padding-left:10px;">Status</span>
-            </li>
-            <div *ngFor="let flow of flows" id="{{flow.Id}}" class="ulRight" (click)="viewFlow(flow.Id)">
-                <li class="liRight" style="width: 215px; padding-top: 5px;">
-                    <span style="width:60px">{{flow.Name}}</span>
+            <ul id="ulRight" class="list-group">
+                <li class="liRight" style="height:40px; background: white;border: 1px rgba(0, 0, 0, .125); border-bottom-style: solid;">
+                    <span class="TitleName">Name</span>
+                    <span style="padding-left:10px;">Status</span>
                 </li>
-                <cswitch class="switch-medium" style=" margin-top:5px;"></cswitch>
-            </div>
-        </ul>
+                <div *ngFor="let flow of flows" id="{{flow.Id}}" class="ulRight" (click)="viewFlow(flow.Id)">
+                    <li class="liRight" style="width: 215px; padding-top: 5px;">
+                        <span style="width:60px">{{flow.Name}}</span>
+                    </li>
+                    <cswitch class="switch-medium" style=" margin-top:5px;"></cswitch>
+                </div>
+            </ul>
+        </div>
     </div>
-</div>
 </div>
 
 <!-- connector popup -->
 <div>
-    <ng-template #newConnectorTemplate class="modal fade row" bsModal #staticModal="bs-modal" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-static-name">
+    <ng-template #newConnectorTemplate class="modal fade row" bsModal #staticModal="bs-modal" [config]="{backdrop: 'static'}"
+        tabindex="-1" role="dialog" aria-labelledby="dialog-static-name">
         <div class="modal-header">
             <h4 class="modal-title pull-left">Add Connctor</h4>
             <button type="button" class="close pull-right" aria-label="Close" (click)="closeConnector()">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
         <div class="modal-body">
             <div class="input-group input-group-sm mb-3">
@@ -208,8 +213,8 @@
             <div class="input-group input-group-sm mb-3 ">
                 <input style="visibility:hidden " type="text " class="form-control " aria-label="Small " aria-describedby="inputGroup-sizing-sm ">
                 <button type="button " class="btn btn-primary " (click)="savenewConnector()">
-                                Save Connecotr
-                              </button>
+                    Save Connecotr
+                </button>
             </div>
         </div>
     </ng-template>
@@ -222,8 +227,8 @@
             <div class="modal-header">
                 <h4 id="dialog-child-name" class="modal-title pull-left">Adapter</h4>
                 <button type="button" class="close pull-right" aria-label="Close" (click)="hideAdapter()">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <!--Property List-->
             <div style="width: 100%; margin-left: 10px; margin-top: 10px">
@@ -234,10 +239,10 @@
                 <div style="float: left;width: 50%">
                     <p>Trigger:{{ adapterInfo.TriggerName }}</p>
                     <div *ngFor="let action of adapterInfo.Action">
-                        <select style="margin-top:16px;" class="col-sm-9 form-control" [(ngModel)]="action.trigger">  
+                        <select style="margin-top:16px;" class="col-sm-9 form-control" [(ngModel)]="action.trigger">
                             <option [ngValue]=""></option>
-                            <option class="col-md-1" *ngFor="let trigger of adapterInfo.Trigger" [value]="trigger.Name">{{ trigger.Name }}    
-                            </option>  
+                            <option class="col-md-1" *ngFor="let trigger of adapterInfo.Trigger" [value]="trigger.Name">{{ trigger.Name }}
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -249,8 +254,8 @@
             <div class="input-group input-group-sm mb-3 ">
                 <hr/>
                 <button type="button " style="margin-right: 10px;" class="btn btn-primary " (click)="hideAdapter()">
-                        Save Adapter
-                    </button>
+                    Save Adapter
+                </button>
             </div>
         </div>
     </div>
@@ -264,15 +269,16 @@
                 <h4>Warning!</h4>
             </div>
             <div style="margin: 10px 10px 10px 10px">
-                <p >You have unsaved flow. Would you like to cancel view and go on modify the flow or continue to view flow. If you continue to view flow, the unsaved flow will not be saved.</p>
+                <p>You have unsaved flow. Would you like to cancel view and go on modify the flow or continue to view flow.
+                    If you continue to view flow, the unsaved flow will not be saved.</p>
                 <hr/>
             </div>
             <div style="margin-bottom: 15px;">
                 <button type="button " style="float: right; margin-right: 15px; " class="btn btn-primary " (click)="hideConfirm()">
-                        Cancel
+                    Cancel
                 </button>
                 <button type="button " style="float: right; margin-right: 15px;" class="btn btn-primary " (click)="GoonView()">
-                        Continue
+                    Continue
                 </button>
             </div>
         </div>

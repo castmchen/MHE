@@ -140,6 +140,7 @@ ul li a {
     /* padding-bottom: 10px; */
     padding-left: 30px;
     height: 40px;
+    font-weight:600; 
 }
 
 .liSide {
@@ -166,6 +167,11 @@ ul li a {
 
 .middleLi {
     height: 30px;
+}
+
+.disableLi{
+    height: 30px;
+    color: #999999;
 }
 
 .flowPanel {
