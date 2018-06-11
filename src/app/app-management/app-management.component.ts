@@ -263,9 +263,10 @@ export class AppManagementComponent implements OnInit {
        }
     })();
 
+    continueFlowId:any;
     viewFlow(flowId: any): void{
       if( this.activeTrigger  || this.activeActions.length >0){
-        $('#hiddenId').text = flowId;
+        this.continueFlowId = flowId;
         this.ShowConfirm();
         console.log("no save");
         return;
@@ -294,7 +295,7 @@ GoonView():void{
   this.activeActions = [];
   this.currentFlow = new FlowModel();
   this.confirmPopup.hide();
-  this.viewFlow($('#hiddenId').text);
+  this.viewFlow(this.continueFlowId);
 }
 
 hideConfirm():void{
